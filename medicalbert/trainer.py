@@ -34,9 +34,13 @@ class Trainer:
                     # Update the model gradients
                     self.classifier.update_gradients()
 
+
+
             # save a checkpoint here
             print(batch_losses)
             self.classifier.save()
+
+            self.classifier.epochs = self.classifier.epochs+1
 
 
 
