@@ -7,9 +7,9 @@ from transformers import BertTokenizer
 random_seed = 1234
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-output_dir = "~/data/models"
+output_dir = "~/DATA/models"
 training_data = "train.csv"
-test_data = "~/Data/train.csv"
+test_data = "~/DATA/train.csv"
 
 # Base model objects
 pretrained_model = 'bert-base-uncased'

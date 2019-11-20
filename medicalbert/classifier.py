@@ -1,3 +1,4 @@
+import logging
 import os
 
 import config
@@ -50,7 +51,9 @@ class Classifier:
         if not os.path.exists(os.path.join(config.output_dir, config.run_name)):
             os.makedirs(os.path.join(config.output_dir, config.run_name))
 
-        torch.save(checkpoint, os.path.join(config.output_dir, config.run_name), str(self.epochs))
+        torch.save(checkpoint, os.path.join(config.output_dir, config.run_name, str(self.epochs)))
+
+        logging.info("Saved model")
 
     def load_from_checkpoint(self):
 
