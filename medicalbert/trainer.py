@@ -27,8 +27,9 @@ class Trainer:
 
                     print(labels.shape)
                     print(features.shape)
-                    loss, out = self.classifier.forward_pass(features, labels)
+                    outputs = self.classifier.forward_pass(features, labels)
 
+                    loss = outputs[0]
                     batch_loss += loss.item()
 
                     loss.backward()
