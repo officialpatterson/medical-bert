@@ -25,5 +25,5 @@ hyperparams['learning_rate'] = 0.000001
 hyperparams['num_warmup_steps'] = 10
 hyperparams['epochs'] = 5
 
-checkpoint = None
+checkpoint_location = None
 run_name = "tail-only-random"
