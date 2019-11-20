@@ -1,12 +1,13 @@
+import logging
+
 import torch
 from datareader import DataReader
 import config
 from classifier import Classifier
-from joblib import logger
 from trainer import Trainer
 
 if __name__ == "__main__":
-    logger.info("Number of GPUS: {}".format(torch.cuda.device_count()))
+    logging.info("Number of GPUS: {}".format(torch.cuda.device_count()))
 
     # load the data
     datareader = DataReader(config.training_data, config.tokenizer, config.max_sequence_length, config.hyperparams['batch_size'])
