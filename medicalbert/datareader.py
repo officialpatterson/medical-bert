@@ -35,7 +35,7 @@ class DataReader:
         labels_list = []
         print("converting to features")
 
-        df = pd.read_csv(dataset)
+        df = pd.read_csv(dataset, engine='python')
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
             # tokenize the text
             tokens = self.tokenizer.tokenize(row['text'])
