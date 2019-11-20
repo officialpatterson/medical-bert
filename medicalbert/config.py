@@ -1,9 +1,11 @@
 # We store all the application settings here.
 
 # File locations
+import torch
 from transformers import BertTokenizer
 
 random_seed = 1234
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 output_dir = "~/data/models"
 training_data = "train.csv"
@@ -21,4 +23,7 @@ hyperparams['num_steps'] = 1000
 hyperparams['gradient_accumulation_steps'] = 32
 hyperparams['learning_rate'] = 0.000001
 hyperparams['num_warmup_steps'] = 10
+hyperparams['epochs'] = 5
 
+checkpoint = None
+run_name = "tail-only-random"

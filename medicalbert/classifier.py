@@ -1,4 +1,8 @@
+import os
+
 import config
+import torch
+from torch.optim import optimizer
 from transformers import BertForSequenceClassification, AdamW
 from transformers import WarmupLinearSchedule as get_linear_schedule_with_warmup
 
@@ -14,15 +18,18 @@ class Classifier:
         self.scheduler = get_linear_schedule_with_warmup(self.optimizer,
                                                          warmup_steps=hyperparams['num_warmup_steps'],
                                                          t_total=hyperparams['num_steps'])
+        self.epochs = 0
 
-    def forward_pass(self, input_batch):
-        loss = self.model(input_batch)
+    def forward_pass(self, input_batch, labels):
+        loss = self.model(input_batch, labels)
 
     def set_train_mode(self):
         self.model.train()
+        self.model.to(config.device)
 
     def set_eval_mode(self):
         self.model.eval()
+        self.model.to(config.device)
 
     def model_params(self):
         return self.model.params
@@ -32,3 +39,31 @@ class Classifier:
         self.scheduler.step()
         self.optimizer.zero_grad()
 
+    def save(self):
+        checkpoint = {
+            'epoch': self.epochs + 1,
+            'bert_dict': self.model.state_dict(),
+            'optimizer': self.optimizer.state_dict(),
+            'scheduler': self.scheduler.state_dict()
+        }
+        # Make the output directory structure if it doesnt exist
+        if not os.path.exists(os.path.join(config.output_dir, config.run_name)):
+            os.makedirs(os.path.join(config.output_dir, config.run_name))
+
+        torch.save(checkpoint, os.path.join(config.output_dir, config.run_name), str(self.epochs))
+
+    def load_from_checkpoint(self):
+
+        if config.checkpoint_location:
+            checkpoint = torch.load(config.checkpoint_location)
+            self.epochs = checkpoint['epoch']
+            self.model.load_state_dict(checkpoint['bert_dict'])
+            self.optimizer.load_state_dict(checkpoint['optimizer'])
+            self.scheduler.load_state_dict(checkpoint['scheduler'])
+
+            # work around - for some reason reloading an optimizer that worked with CUDA tensors
+            # causes an error - see https://github.com/pytorch/pytorch/issues/2830
+            for state in self.optimizer.state.values():
+                for k, v in state.items():
+                    if isinstance(v, torch.Tensor):
+                        state[k] = v.cuda()
