@@ -1,5 +1,6 @@
 # This method is the public interface. We use this to get a dataset.
 # If a tensor dataset does not exist, we create it.
+import logging
 import os
 
 import pandas as pd
@@ -17,7 +18,7 @@ def convert_to_features(tokens, tokenizer):
 
     input_ids = tokenizer.convert_tokens_to_ids(tokens)
 
-    assert len(input_ids) == 512
+    assert len(input_ids) <= 512
 
     return input_ids
 
@@ -31,9 +32,13 @@ class DataReader:
         self.batch_size = batch_size
 
     def get_dataset(self, dataset):
+        if os.path.isfile(os.path.join(dataset+".pt")):
+            logging.info("Using Cached dataset - saves time!")
+            return torch.load(dataset+".pt")
+
         feature_list = []
         labels_list = []
-        print("converting to features")
+        logging.info("Building fresh dataset...")
 
         df = pd.read_csv(dataset, engine='python')
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
@@ -47,7 +52,9 @@ class DataReader:
         all_labels = torch.tensor([f for f in labels_list], dtype=torch.long)
         all_texts = torch.tensor([f for f in feature_list], dtype=torch.long)
 
-        return TensorDataset(all_labels, all_texts)
+        td = TensorDataset(all_labels, all_texts)
+        torch.save(td, dataset+'.pt')
+        return td
 
     def get(self):
         dataloader = DataLoader(self.data, shuffle=True, batch_size=self.batch_size)
