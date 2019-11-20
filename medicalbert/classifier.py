@@ -1,6 +1,7 @@
 import config
 from transformers import BertForSequenceClassification, AdamW
 from transformers import WarmupLinearSchedule as get_linear_schedule_with_warmup
+
 class Classifier:
     def __init__(self, hyperparams):
         print(config.pretrained_model, hyperparams)
