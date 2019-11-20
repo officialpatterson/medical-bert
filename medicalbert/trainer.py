@@ -16,8 +16,6 @@ class Trainer:
         self.classifier.set_train_mode()
 
         for _ in trange(self.classifier.epochs, int(config.hyperparams['epochs']), desc="Epoch"):
-            tr_loss = 0  # records the loss for the epoch
-            nb_tr_examples, nb_tr_steps = 0, 0
             batch_loss = 0
             with tqdm(self.datareader.get(), desc="Iteration") as t:
                 for step, batch in enumerate(t):
@@ -33,12 +31,6 @@ class Trainer:
                     batch_loss += loss.item()
 
                     loss.backward()
-
-                    tr_loss += loss.item()
-                    total_steps = total_steps + 1
-
-                    nb_tr_examples += features.size(0)
-                    nb_tr_steps += 1
 
                     # Update the model gradients
                     self.classifier.update_gradients()
