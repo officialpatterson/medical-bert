@@ -25,6 +25,8 @@ class Trainer:
                     batch = tuple(t.to(config.device) for t in batch)
                     labels, features = batch
 
+                    print(labels.shape)
+                    print(features.shape)
                     loss, out = self.classifier.forward_pass(features, labels)
 
                     batch_loss += loss.item()
