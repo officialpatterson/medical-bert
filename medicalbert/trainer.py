@@ -19,7 +19,7 @@ class Trainer:
             tr_loss = 0  # records the loss for the epoch
             nb_tr_examples, nb_tr_steps = 0, 0
             batch_loss = 0
-            with tqdm(self.datareader.get, desc="Iteration") as t:
+            with tqdm(self.datareader.get(), desc="Iteration") as t:
                 for step, batch in enumerate(t):
 
                     batch = tuple(t.to(config.device) for t in batch)
