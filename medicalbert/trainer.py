@@ -15,7 +15,7 @@ class Trainer:
         # Put the classifier in training mode.
         self.classifier.set_train_mode()
 
-        for _ in trange(self.classifier.epochs, int(config.epochs), desc="Epoch"):
+        for _ in trange(self.classifier.epochs, int(config.hyperparams['epochs']), desc="Epoch"):
             tr_loss = 0  # records the loss for the epoch
             nb_tr_examples, nb_tr_steps = 0, 0
             batch_loss = 0
