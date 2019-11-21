@@ -1,11 +1,12 @@
 import logging
+import os
 
 import torch
 from datareader import DataReader
 import config
 from classifier import Classifier
 from trainer import Trainer
-
+from evaluator import Evaluator
 from cliparser import setup_parser
 
 if __name__ == "__main__":
@@ -29,6 +30,28 @@ if __name__ == "__main__":
 
         # Do the training
         trainer.run()
+
+    if args.eval:
+
+        for file in os.listdir(os.path.join(config.checkpoint_location, config.run_name)):
+            print(file)
+
+        # Load the evaluation data.
+        train_data = DataReader(config.training_data,
+                                config.tokenizer,
+                                config.max_sequence_length,
+                                config.eval_batch_size)
+        valid_data = DataReader(config.valid_data,
+                                config.tokenizer,
+                                config.max_sequence_length,
+                                config.eval_batch_size)
+
+        # Give the datasets some names
+        datasets = {"train": train_data, "valid": valid_data}
+
+        evaluator = Evaluator(classifier, datasets)
+
+        evaluator.run()
 
 
 

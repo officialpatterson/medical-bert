@@ -13,13 +13,11 @@ def setup_parser():
                         action='store_true',
                         help="Whether to run training.")
 
-    parser.add_argument("--do_eval",
+    parser.add_argument("--eval",
                         action='store_true',
                         help="Whether to run eval on the dev set.")
-    parser.add_argument("--do_test",
-                        action='store_true',
-                        help="Whether to run eval on the test set.")
-    parser.add_argument("--do_lower_case",
-                        action='store_true',
-                        help="Set this flag if you are using an uncased model.")
+    parser.add_argument("--use_model",
+                        default=None,
+                        type=str,
+                        help="Use this model for evaluations")
     return parser
