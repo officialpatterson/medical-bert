@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 def accuracy(out, labels):
 
-    print(out)
+    print(out.shape)
 
 class Evaluator:
     def __init__(self, classifier, datasets):
