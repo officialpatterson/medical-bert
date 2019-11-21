@@ -22,6 +22,6 @@ class Evaluator:
 
         # save here
 
-    def run(self):
+    def run_all(self):
         for name, dataset in self.datasets.items():
             self.run(dataset, name)

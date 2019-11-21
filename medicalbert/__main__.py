@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
             evaluator = Evaluator(classifier, datasets)
 
-            evaluator.run()
+            evaluator.run_all()
 
 
 
