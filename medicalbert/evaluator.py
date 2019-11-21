@@ -30,7 +30,7 @@ class Evaluator:
 
             logits = logits.detach().cpu().numpy()
             label_ids = labels.detach().cpu().numpy()
-            if all_logits:
+            if all_logits is not None:
                 all_logits = np.concatenate(all_logits, logits)
                 all_labels = np.concatenate(all_labels, label_ids)
             else:
