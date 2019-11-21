@@ -33,7 +33,7 @@ class DataReader:
         self.batch_size = batch_size
 
     def get_dataset(self, dataset):
-        path = os.path.join(config.checkpoint, config.run_name)
+        path = os.path.join(config.checkpoint_location, config.run_name)
         saved_file = os.path.join(path, dataset+".pt")
         if os.path.isfile(saved_file):
             logging.info("Using Cached dataset - saves time!")
