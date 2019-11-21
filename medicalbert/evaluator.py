@@ -35,14 +35,10 @@ class Evaluator:
             print(label_ids.shape)
             if all_logits is not None:
                 all_logits = np.concatenate(all_logits, logits)
-                all_labels = np.concatenate(all_labels, label_ids)
             else:
                 all_logits = logits
-                all_labels = label_ids
 
-        print(accuracy_score(all_labels, np.argmax(all_logits, axis=0)))
-
-        print(roc_auc_score(all_labels, all_logits))
+        print(all_logits.shape)
         # save here
 
     def run_all(self):
