@@ -51,7 +51,7 @@ class Classifier:
         if not os.path.exists(os.path.join(config.output_dir, config.run_name)):
             os.makedirs(os.path.join(config.output_dir, config.run_name))
 
-        torch.save(checkpoint, os.path.join(config.output_dir, config.run_name, str(self.epochs)))
+        torch.save(checkpoint, os.path.join(config.checkpoint_location, config.run_name, "checkpoints", str(self.epochs)))
 
         logging.info("Saved model")
 
