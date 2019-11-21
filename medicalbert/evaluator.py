@@ -1,18 +1,28 @@
-import logging, torch, config
-
+import logging, torch, config, json
+import os
+import pandas as pd
 import numpy as np
-from sklearn.metrics import roc_auc_score, accuracy_score
+from sklearn.metrics import roc_auc_score, accuracy_score, average_precision_score
 from tqdm import tqdm
 
 
-def accuracy(out, labels):
+def save(summary, logits, labels, path):
+    json.dump(summary, open(os.path.join(path, "file_name.json"), 'w'))
 
-    print(out.shape)
+    first_logit = pd.Series(logits[:, 1])
+    second_logit = pd.Series(logits[, 1:])
+    labels = labels
+
+    frame = {'0': first_logit, '1': second_logit, 'label': labels}
+
+    pd.DataFrame(frame).to_csv(os.path.join(path, "output.csv"))
+
 
 class Evaluator:
-    def __init__(self, classifier, datasets):
+    def __init__(self, classifier, datasets, path):
         self.classifier = classifier
         self.datasets = datasets
+        self.path = path
 
     def run(self, data, name):
         logging.info("Running Evaluations")
@@ -38,12 +48,13 @@ class Evaluator:
                 all_logits = logits
                 all_labels = label_ids
 
-        print(all_logits.shape)
-        print(all_labels.shape)
-        print(roc_auc_score(all_labels, all_logits[:,1]))
-        print(np.argmax(all_logits, axis=1).shape) #this is correct
+        roc = roc_auc_score(all_labels, all_logits[:,1])
+        precision = average_precision_score(all_labels, all_logits[:,1])
+        accuracy = accuracy_score(all_labels, np.argmax(all_logits, axis=1))
 
-        # save here
+        summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}
+
+        save(summary, all_logits, all_labels, self.path)
 
     def run_all(self):
         for name, dataset in self.datasets.items():

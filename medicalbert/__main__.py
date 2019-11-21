@@ -49,7 +49,12 @@ if __name__ == "__main__":
             classifier = Classifier(config.hyperparams)
             classifier.load_from_checkpoint(os.path.join("checkpoints", file))
 
-            evaluator = Evaluator(classifier, datasets)
+            path = os.path.join(config.checkpoint_location, config.run_name, "results", file)
+
+            if not os.path.exists(path):
+                os.makedirs(path)
+
+            evaluator = Evaluator(classifier, datasets, path)
 
             evaluator.run_all()
 
