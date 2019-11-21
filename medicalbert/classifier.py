@@ -55,10 +55,11 @@ class Classifier:
 
         logging.info("Saved model")
 
-    def load_from_checkpoint(self):
+    def load_from_checkpoint(self, checkpoint_file):
 
         if config.checkpoint_location:
-            checkpoint = torch.load(config.checkpoint_location)
+            file_path = os.path.join(config.checkpoint_location, config.run_name, checkpoint_file)
+            checkpoint = torch.load(file_path)
             self.epochs = checkpoint['epoch']
             self.model.load_state_dict(checkpoint['bert_dict'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])

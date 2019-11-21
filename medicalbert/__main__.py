@@ -6,7 +6,7 @@ import config
 from classifier import Classifier
 from trainer import Trainer
 
-from cliparse import setup_parser
+from cliparser import setup_parser
 
 if __name__ == "__main__":
     parser = setup_parser()
@@ -21,7 +21,8 @@ if __name__ == "__main__":
         classifier = Classifier(config.hyperparams)
 
         # Load from checkpoint if we're using one (won't do anything if were not)
-        classifier.load_from_checkpoint()
+        if args.train_from_checkpoint:
+            classifier.load_from_checkpoint(args.train_from_checkpoint)
 
         # Pass the classifier to the trainer
         trainer = Trainer(classifier, datareader, config.hyperparams)
