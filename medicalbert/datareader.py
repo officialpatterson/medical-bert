@@ -60,6 +60,7 @@ class DataReader:
         if not os.path.exists(path):
             os.makedirs(path)
 
+        logging.info("saving dataset at {}".format(saved_file))
         torch.save(td, saved_file)
         return td
 
