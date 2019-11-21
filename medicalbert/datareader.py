@@ -37,7 +37,7 @@ class DataReader:
         saved_file = os.path.join(path, dataset+".pt")
         if os.path.isfile(saved_file):
             logging.info("Using Cached dataset - saves time!")
-            return torch.load(dataset+".pt")
+            return torch.load(dataset)
 
         feature_list = []
         labels_list = []
