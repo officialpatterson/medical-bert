@@ -1,6 +1,7 @@
 # This method is the public interface. We use this to get a dataset.
 # If a tensor dataset does not exist, we create it.
 import logging
+import config
 import os
 
 import pandas as pd
@@ -32,7 +33,9 @@ class DataReader:
         self.batch_size = batch_size
 
     def get_dataset(self, dataset):
-        if os.path.isfile(os.path.join(dataset+".pt")):
+        path = os.path.join(config.checkpoint, config.run_name)
+        saved_file = os.path.join(path, dataset+".pt")
+        if os.path.isfile(saved_file):
             logging.info("Using Cached dataset - saves time!")
             return torch.load(dataset+".pt")
 
@@ -53,7 +56,11 @@ class DataReader:
         all_texts = torch.tensor([f for f in feature_list], dtype=torch.long)
 
         td = TensorDataset(all_labels, all_texts)
-        torch.save(td, dataset+'.pt')
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        torch.save(td, saved_file)
         return td
 
     def get(self):
