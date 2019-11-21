@@ -48,8 +48,8 @@ class Classifier:
             'scheduler': self.scheduler.state_dict()
         }
         # Make the output directory structure if it doesnt exist
-        if not os.path.exists(os.path.join(config.checkpoint_location, config.run_name)):
-            os.makedirs(os.path.join(config.checkpoint_location, config.run_name))
+        if not os.path.exists(os.path.join(config.checkpoint_location, config.run_name, "checkpoints")):
+            os.makedirs(os.path.join(config.checkpoint_location, config.run_name, "checkpoints"))
 
         torch.save(checkpoint, os.path.join(config.checkpoint_location, config.run_name, "checkpoints", str(self.epochs)))
 
