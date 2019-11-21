@@ -17,7 +17,8 @@ class Trainer:
 
         batch_losses = []
         for _ in trange(self.classifier.epochs, int(config.hyperparams['epochs']), desc="Epoch"):
-            batch_loss = 0
+            epoch_loss = 0
+            num_steps = 0
             with tqdm(self.datareader.get(), desc="Iteration") as t:
                 for step, batch in enumerate(t):
 
@@ -34,10 +35,13 @@ class Trainer:
                     # Update the model gradients
                     self.classifier.update_gradients()
 
+                    # statistics
+                    epoch_loss += loss.item()
+                    num_steps += 1
 
+            logging.info("EPOCH LOSS: {}".format(epoch_loss/num_steps))
 
             # save a checkpoint here
-            print(batch_losses)
             self.classifier.save()
 
             self.classifier.epochs = self.classifier.epochs+1
