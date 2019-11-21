@@ -22,3 +22,4 @@ def setup_parser():
     parser.add_argument("--do_lower_case",
                         action='store_true',
                         help="Set this flag if you are using an uncased model.")
+    return parser
