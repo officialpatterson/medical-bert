@@ -17,11 +17,11 @@ tokenizer = BertTokenizer.from_pretrained(pretrained_model)
 # Model hyperparameters
 max_sequence_length = 510
 hyperparams = {}
-hyperparams['batch_size'] = 8
-hyperparams['num_steps'] = 1000
+hyperparams['batch_size'] = 16
+hyperparams['num_steps'] = 230350
 hyperparams['gradient_accumulation_steps'] = 32
 hyperparams['learning_rate'] = 0.00001
-hyperparams['num_warmup_steps'] = 10
+hyperparams['num_warmup_steps'] = 10000
 hyperparams['epochs'] = 5
 
 eval_batch_size = 32
