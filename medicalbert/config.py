@@ -7,7 +7,6 @@ from transformers import BertTokenizer
 random_seed = 1234
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-output_dir = "~/DATA/models"
 training_data = "trainsmoke.csv"
 test_data = "~/DATA/train.csv"
 
