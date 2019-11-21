@@ -33,7 +33,7 @@ class Evaluator:
 
             print(logits.shape)
             if all_logits is not None:
-                all_logits = np.concatenate(all_logits, logits)
+                all_logits = np.concatenate((all_logits, logits))
             else:
                 all_logits = logits
 
