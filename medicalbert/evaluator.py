@@ -9,8 +9,8 @@ from tqdm import tqdm
 def save(summary, logits, labels, path):
     json.dump(summary, open(os.path.join(path, "file_name.json"), 'w'))
 
-    first_logit = pd.Series(logits[:, 1])
-    second_logit = pd.Series(logits[, 1:])
+    first_logit = pd.Series(logits[:,])
+    second_logit = pd.Series(logits[,:])
     labels = labels
 
     frame = {'0': first_logit, '1': second_logit, 'label': labels}
