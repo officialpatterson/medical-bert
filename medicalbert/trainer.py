@@ -42,6 +42,7 @@ class Trainer:
             with open(os.path.join(config.checkpoint_location, config.run_name, "batch_loss.csv"), "a") as f:
                 for loss in batch_losses:
                     f.write("{}\n".format(loss))
+                batch_losses = [] #reset it.
 
             # save a checkpoint here
             self.classifier.save()
