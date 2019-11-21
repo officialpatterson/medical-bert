@@ -33,10 +33,10 @@ class Evaluator:
 
             print(label_ids.shape)
             if all_logits is not None:
-                all_logits = np.concatenate(all_logits, logits)
+                all_logits = np.concatenate(all_logits, logits.reshape(-1))
                 all_labels = np.concatenate(all_labels, label_ids)
             else:
-                all_logits = logits
+                all_logits = logits.reshape(-1)
                 all_labels = label_ids
 
         print(accuracy_score(all_labels, np.argmax(all_logits, axis=0)))
