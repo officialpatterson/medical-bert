@@ -18,7 +18,11 @@ class Evaluator:
 
             with torch.no_grad():
                 loss, logits = self.classifier.forward_pass(features, labels)
-            print(loss)
+
+            logits = logits.detach().cpu().numpy()
+
+
+            label_ids = labels.to('cpu').numpy()
 
         # save here
 

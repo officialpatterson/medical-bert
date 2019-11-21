@@ -4,8 +4,11 @@ import os
 import config
 import torch
 from torch.optim import optimizer
-from transformers import BertForSequenceClassification, AdamW
+from transformers import AdamW
 from transformers import WarmupLinearSchedule as get_linear_schedule_with_warmup
+
+from bert_model import BertForSequenceClassification
+
 
 class Classifier:
     def __init__(self, hyperparams):
