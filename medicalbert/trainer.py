@@ -29,15 +29,14 @@ class Trainer:
                     outputs = self.classifier.forward_pass(features, labels)
 
                     loss = outputs[0]
+
+                    # Statistics
                     batch_losses.append(loss.item())
 
                     loss.backward()
 
                     # Update the model gradients
                     self.classifier.update_gradients()
-
-                    # statistics
-                    batch_losses.append(loss.item())
 
             with open(os.path.join(config.checkpoint_location, config.run_name, "batch_loss.csv"), "a") as f:
                 for loss in batch_losses:
