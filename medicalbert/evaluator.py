@@ -1,6 +1,12 @@
 import logging, torch, config
+
+import numpy as np
 from tqdm import tqdm
 
+
+def accuracy(out, labels):
+    outputs = np.argmax(out, axis=0)
+    return np.sum(outputs == labels)
 
 class Evaluator:
     def __init__(self, classifier, datasets):
@@ -21,6 +27,7 @@ class Evaluator:
 
             logits = logits.detach().cpu().numpy()
 
+            print(accuracy(logits, labels))
 
             label_ids = labels.to('cpu').numpy()
 
