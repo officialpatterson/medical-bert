@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 
 def save(summary, logits, labels, path):
-    json.dump(summary, open(os.path.join(path, "file_name.json"), 'w'))
+    json.dump(summary, open(os.path.join(path, "summary.json"), 'w'))
 
     first_logit = pd.Series(logits[:,0])
     second_logit = pd.Series(logits[:,1])
