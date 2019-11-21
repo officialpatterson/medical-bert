@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
         for file in os.listdir(os.path.join(config.checkpoint_location, config.run_name, "checkpoints")):
             classifier = Classifier(config.hyperparams)
-            classifier.load_from_checkpoint(file)
+            classifier.load_from_checkpoint(os.path.join("checkpoints", file))
 
             evaluator = Evaluator(classifier, datasets)
 
