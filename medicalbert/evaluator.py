@@ -40,7 +40,7 @@ class Evaluator:
 
         print(all_logits.shape)
         print(all_labels.shape)
-        print(np.argmax(all_logits, axis=0).shape)
+        print(np.argmax(all_logits, axis=1).shape)
 
         # save here
 
