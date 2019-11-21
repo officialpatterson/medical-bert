@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 def accuracy(out, labels):
     outputs = np.argmax(out, axis=0)
-    return np.sum(outputs == labels)
+    print(outputs)
 
 class Evaluator:
     def __init__(self, classifier, datasets):
