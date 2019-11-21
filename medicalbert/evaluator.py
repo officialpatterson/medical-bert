@@ -22,7 +22,6 @@ class Evaluator:
 
         # save here
 
-
     def run(self):
-        for name, dataset in self.datasets:
+        for name, dataset in self.datasets.items():
             self.run(dataset, name)
