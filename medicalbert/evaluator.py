@@ -9,8 +9,8 @@ from tqdm import tqdm
 def save(summary, logits, labels, path):
     json.dump(summary, open(os.path.join(path, "file_name.json"), 'w'))
 
-    first_logit = pd.Series(logits[:,1])
-    second_logit = pd.Series(logits[:,0])
+    first_logit = pd.Series(logits[:,0])
+    second_logit = pd.Series(logits[:,1])
     labels = labels
 
     frame = {'0': first_logit, '1': second_logit, 'label': labels}
@@ -48,8 +48,8 @@ class Evaluator:
                 all_logits = logits
                 all_labels = label_ids
 
-        roc = roc_auc_score(all_labels, all_logits[:,1])
-        precision = average_precision_score(all_labels, all_logits[:,1])
+        roc = roc_auc_score(all_labels, all_logits[:,0])
+        precision = average_precision_score(all_labels, all_logits[:,0])
         accuracy = accuracy_score(all_labels, np.argmax(all_logits, axis=1))
 
         summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}
