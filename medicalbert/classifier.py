@@ -57,4 +57,16 @@ class Classifier:
 
     def load_from_checkpoint(self):
 
-        pass
+        if config.checkpoint_location:
+            checkpoint = torch.load(config.checkpoint_location)
+            self.epochs = checkpoint['epoch']
+            self.model.load_state_dict(checkpoint['bert_dict'])
+            self.optimizer.load_state_dict(checkpoint['optimizer'])
+            self.scheduler.load_state_dict(checkpoint['scheduler'])
+
+            # work around - for some reason reloading an optimizer that worked with CUDA tensors
+            # causes an error - see https://github.com/pytorch/pytorch/issues/2830
+            for state in self.optimizer.state.values():
+                for k, v in state.items():
+                    if isinstance(v, torch.Tensor):
+                        state[k] = v.cuda()

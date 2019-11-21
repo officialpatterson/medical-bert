@@ -1,5 +1,6 @@
 # This module allows us to take a classifier as a parameter and to modify the weights
 import logging, config
+import os
 
 from tqdm import tqdm, trange
 
@@ -36,10 +37,11 @@ class Trainer:
                     self.classifier.update_gradients()
 
                     # statistics
-                    epoch_loss += loss.item()
-                    num_steps += 1
+                    batch_losses.append(loss.item())
 
-            logging.info("EPOCH LOSS: {}".format(epoch_loss/num_steps))
+            with open(os.path.join(config.output_dir, config.run_name), "a") as f:
+                for loss in batch_losses:
+                    f.write("{}\n".format(loss))
 
             # save a checkpoint here
             self.classifier.save()
