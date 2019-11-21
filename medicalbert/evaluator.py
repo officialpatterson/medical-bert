@@ -1,6 +1,7 @@
 import logging, torch, config
 
 import numpy as np
+from sklearn.metrics import roc_auc_score, accuracy_score
 from tqdm import tqdm
 
 
@@ -18,6 +19,8 @@ class Evaluator:
         # Put the classifier in training mode.
         self.classifier.set_eval_mode()
 
+        all_logits = None
+        all_labels = None
         for step, batch in enumerate(tqdm(data.get(), desc="evaluating")):
             batch = tuple(t.to(config.device) for t in batch)
             labels, features = batch
@@ -26,11 +29,17 @@ class Evaluator:
                 loss, logits = self.classifier.forward_pass(features, labels)
 
             logits = logits.detach().cpu().numpy()
+            label_ids = labels.detach().cpu().numpy()
+            if all_logits:
+                all_logits = np.concatenate(all_logits, logits)
+                all_labels = np.concatenate(all_labels, label_ids)
+            else:
+                all_logits = logits
+                all_labels = label_ids
 
-            print(accuracy(logits, labels))
+        print(accuracy_score(all_labels, np.argmax(all_logits, axis=0)))
 
-            label_ids = labels.to('cpu').numpy()
-
+        print(roc_auc_score(all_labels, all_logits))
         # save here
 
     def run_all(self):
