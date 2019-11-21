@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 
 def accuracy(out, labels):
-    outputs = np.argmax(out, axis=0)
+    
     print(outputs)
 
 class Evaluator:
