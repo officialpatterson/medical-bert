@@ -12,7 +12,7 @@ class Evaluator:
         # Put the classifier in training mode.
         self.classifier.set_eval_mode()
 
-        for step, batch in enumerate(tqdm(data, desc="evaluating")):
+        for step, batch in enumerate(tqdm(data.get(), desc="evaluating")):
             batch = tuple(t.to(config.device) for t in batch)
             labels, features = batch
 
