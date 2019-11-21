@@ -33,9 +33,6 @@ if __name__ == "__main__":
 
     if args.eval:
 
-        for file in os.listdir(os.path.join(config.checkpoint_location, config.run_name)):
-            print(file)
-
         # Load the evaluation data.
         train_data = DataReader(config.training_data,
                                 config.tokenizer,
@@ -45,13 +42,16 @@ if __name__ == "__main__":
                                 config.tokenizer,
                                 config.max_sequence_length,
                                 config.eval_batch_size)
-
         # Give the datasets some names
         datasets = {"train": train_data, "valid": valid_data}
 
-        evaluator = Evaluator(classifier, datasets)
+        for file in os.listdir(os.path.join(config.checkpoint_location, config.run_name, "checkpoints")):
+            classifier = Classifier(config.hyperparams)
+            classifier.load_from_checkpoint(file)
 
-        evaluator.run()
+            evaluator = Evaluator(classifier, datasets)
+
+            evaluator.run()
 
 
 
