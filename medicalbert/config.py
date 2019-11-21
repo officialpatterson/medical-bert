@@ -25,5 +25,5 @@ hyperparams['learning_rate'] = 0.00001
 hyperparams['num_warmup_steps'] = 10
 hyperparams['epochs'] = 5
 
-checkpoint_location = "/home/strychl3/data"
+checkpoint_location = "/home/strychl3/DATA"
 run_name = "tail-only-random"
