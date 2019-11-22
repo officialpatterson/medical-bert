@@ -36,7 +36,9 @@ class DataReader:
 
     def get_dataset(self, dataset):
         path = os.path.join(config.checkpoint_location, config.run_name)
-        saved_file = os.path.join(config.checkpoint_location, dataset+".pt")
+        saved_file = os.path.join(config.checkpoint_location, config.run_name, dataset+".pt")
+
+        logging.info(saved_file)
         if os.path.isfile(saved_file):
             logging.info("Using Cached dataset from {} - saves time!".format(saved_file))
             return torch.load(saved_file)
