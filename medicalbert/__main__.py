@@ -1,4 +1,5 @@
 import os, logging, torch, config
+import random
 
 import numpy as np
 from datareader import DataReader
@@ -12,7 +13,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     logging.info("Number of GPUS: {}".format(torch.cuda.device_count()))
 
-    torch.random.seed(config.seed)
+    random.seed(config.seed)
     np.random.seed(config.seed)
     torch.manual_seed(config.seed)
 
