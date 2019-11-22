@@ -33,15 +33,18 @@ class Trainer:
                     # Statistics
                     batch_losses.append(loss.item())
 
+                    loss = loss / config.gradient_accumulation_steps
+
                     loss.backward()
 
-                    # Update the model gradients
-                    self.classifier.update_gradients()
+                    if (step + 1) % config.gradient_accumulation_steps == 0:
+                        # Update the model gradients
+                        self.classifier.update_gradients()
 
             with open(os.path.join(config.checkpoint_location, config.run_name, "batch_loss.csv"), "a") as f:
                 for loss in batch_losses:
                     f.write("{}\n".format(loss))
-                batch_losses = [] #reset it.
+                batch_losses = []  # reset it.
 
             # save a checkpoint here
             self.classifier.save()

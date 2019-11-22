@@ -1,9 +1,7 @@
-import logging
-import os
+import os, logging torch, config
 
-import torch
+import numpy as np
 from datareader import DataReader
-import config
 from classifier import Classifier
 from trainer import Trainer
 from evaluator import Evaluator
@@ -13,6 +11,10 @@ if __name__ == "__main__":
     parser = setup_parser()
     args = parser.parse_args()
     logging.info("Number of GPUS: {}".format(torch.cuda.device_count()))
+
+    torch.random.seed(config.seed)
+    np.random.seed(config.seed)
+    torch.manual_seed(config.seed)
 
     # load the data
     if args.train:
