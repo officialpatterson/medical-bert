@@ -4,6 +4,8 @@
 import torch
 from transformers import BertTokenizer
 from transformers.configuration_utils import PretrainedConfig
+
+
 seed = 1234
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

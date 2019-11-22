@@ -1,16 +1,12 @@
-import logging
-import os
-
+import logging, os, torch
 import config
-import torch
-from torch.optim import optimizer
 from transformers import AdamW
 from transformers import WarmupLinearSchedule as get_linear_schedule_with_warmup
 
-from bert_model import BertForSequenceClassification
+from classifiers.bert_model import BertForSequenceClassification
 
 
-class Classifier:
+class BertGeneralClassifier:
     def __init__(self, hyperparams):
         print(config.pretrained_model, hyperparams)
         self.model = BertForSequenceClassification.from_pretrained(config.pretrained_model)

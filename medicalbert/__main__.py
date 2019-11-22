@@ -3,7 +3,7 @@ import random
 
 import numpy as np
 from datareader import DataReader
-from classifier import Classifier
+from classifiers.classifier_factory import ClassifierFactory
 from trainer import Trainer
 from evaluator import Evaluator
 from cliparser import setup_parser
@@ -22,7 +22,8 @@ if __name__ == "__main__":
         datareader = DataReader(config.training_data, config.tokenizer, config.max_sequence_length, config.hyperparams['batch_size'])
 
         # Build a classifier object to use
-        classifier = Classifier(config.hyperparams)
+        classifierFactory = ClassifierFactory()
+        classifier = classifierFactory.make_classifier("bert-general")
 
         # Load from checkpoint if we're using one (won't do anything if were not)
         if args.train_from_checkpoint:
