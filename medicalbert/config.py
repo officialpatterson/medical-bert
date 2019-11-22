@@ -7,8 +7,8 @@ from transformers import BertTokenizer
 seed = 1234
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-training_data = "/home/strychl3/DATA/datasets/no-death/train.csv"
-valid_data = "/home/strychl3/DATA/datasets/no-death/test.csv"
+training_data = "train.csv"
+valid_data = "test.csv"
 
 # Base model objects
 pretrained_model = 'bert-base-uncased'
