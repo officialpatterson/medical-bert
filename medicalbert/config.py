@@ -4,7 +4,7 @@
 import torch
 from transformers import BertTokenizer
 
-random_seed = 1234
+seed = 1234
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 training_data = "train.csv"
