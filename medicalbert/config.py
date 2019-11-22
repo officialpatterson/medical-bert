@@ -31,4 +31,4 @@ hyperparams['epochs'] = 5
 eval_batch_size = 32
 
 checkpoint_location = "/home/strychl3/DATA"
-run_name = "tail-only-random"
+run_name = "tail-only-general"
