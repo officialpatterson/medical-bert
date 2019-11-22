@@ -47,7 +47,7 @@ class DataReader:
         labels_list = []
         logging.info("Building fresh dataset...")
 
-        df = pd.read_csv(os.path.join(config.checkpoint_location, config.run_name, dataset), engine='python')
+        df = pd.read_csv(os.path.join(config.data_dir, dataset), engine='python')
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
             # tokenize the text
             tokens = self.tokenizer.tokenize(row['text'])
