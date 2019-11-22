@@ -1,4 +1,4 @@
-import os, logging torch, config
+import os, logging, torch, config
 
 import numpy as np
 from datareader import DataReader
