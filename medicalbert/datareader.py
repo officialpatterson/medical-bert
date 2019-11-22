@@ -19,7 +19,9 @@ def convert_to_features(tokens, tokenizer):
 
     input_ids = tokenizer.convert_tokens_to_ids(tokens)
 
-    assert len(input_ids) <= 512
+    padding = [0] * (512 - len(input_ids))
+    input_ids += padding
+    assert len(input_ids) == 512
 
     return input_ids
 
