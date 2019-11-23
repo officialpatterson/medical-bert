@@ -30,6 +30,8 @@ class DataReader:
         self.tokenizer = tokenizer
         self.max_sequence_length = config['max_sequence_length']
         self.config = config
+        self.train = None
+        self.eval = None
 
     def get_dataset(self, dataset):
         path = os.path.join(self.config['output_dir'], self.config['experiment_name'])
@@ -69,14 +71,20 @@ class DataReader:
         return td
 
     def get_train(self):
+        if self.train:
+            return self.train
+
         data = self.get_dataset(self.config['training_data'])
         actual_batch_size = self.config['train_batch_size'] // self.config['gradient_accumulation_steps']
 
         logging.info("Using gradient accumulation - physical batch size is {}".format(actual_batch_size))
-        dataloader = DataLoader(data, shuffle=True, batch_size=actual_batch_size)
-        return dataloader
+        self.train = DataLoader(data, shuffle=True, batch_size=actual_batch_size)
+        return self.train
 
     def get_eval(self):
+        if self.eval:
+            return self.eval
+
         data = self.get_dataset(self.config['validation_data'])
-        dataloader = DataLoader(data, shuffle=False, batch_size=self.config['eval_batch_size'])
-        return dataloader
+        self.eval = DataLoader(data, shuffle=False, batch_size=self.config['eval_batch_size'])
+        return self.eval

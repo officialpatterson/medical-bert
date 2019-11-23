@@ -7,7 +7,10 @@ from tqdm import tqdm
 
 
 def save(summary, logits, labels, path, name):
-    json.dump(summary, open(os.path.join(path, name, "summary.json"), 'w'))
+    path = os.path.join(path, name)
+    if not os.path.exists(path):
+        os.makedirs(path)
+    json.dump(summary, open(os.path.join(path, "summary.json"), 'w'))
 
     first_logit = pd.Series(logits[:,0])
     second_logit = pd.Series(logits[:,1])
@@ -15,11 +18,7 @@ def save(summary, logits, labels, path, name):
 
     frame = {'0': first_logit, '1': second_logit, 'label': labels}
 
-    path = os.path.join(path, name)
-    if not os.path.exists(path):
-        os.makedirs(path)
     pd.DataFrame(frame).to_csv(os.path.join(path, "output.csv"))
-
 
 class Evaluator:
     def __init__(self, classifier, path, config):
