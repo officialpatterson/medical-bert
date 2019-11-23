@@ -20,6 +20,7 @@ def save(summary, logits, labels, path, name):
 
     pd.DataFrame(frame).to_csv(os.path.join(path, "output.csv"))
 
+
 class Evaluator:
     def __init__(self, classifier, path, config):
         self.classifier = classifier

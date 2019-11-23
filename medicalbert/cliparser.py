@@ -48,4 +48,8 @@ def setup_parser():
                         default=None,
                         type=float,
                         help="learning_rate")
+    parser.add_argument("--pretrained_model",
+                        default=None,
+                        type=str,
+                        help="pretrained model to train upon.")
     return parser.parse_args()

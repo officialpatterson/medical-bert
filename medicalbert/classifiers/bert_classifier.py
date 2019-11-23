@@ -1,25 +1,28 @@
 import logging, os, torch
 
-from pytorch_transformers import BertForSequenceClassification
-from pytorch_pretrained_bert import BertAdam
+from transformers import AdamW
+from transformers import WarmupLinearSchedule as get_linear_schedule_with_warmup
+from classifiers.bert_model import BertForSequenceClassification
+
+
 class BertGeneralClassifier:
     def __init__(self, config):
         self.config = config
         self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
 
+        # To reproduce BertAdam specific behavior set correct_bias=False
+        self.optimizer = AdamW(self.model.parameters(), lr=self.config['learning_rate'], correct_bias=False)
 
         # PyTorch scheduler
         num_steps = int(self.config['num_train_examples'] / self.config['train_batch_size'] /
                          self.config['gradient_accumulation_steps']) * \
                                    self.config['epochs']
 
-        optimizer_grouped_parameters = [
-            {'params': self.model.parameters(), 'lr': self.config['learning_rate']}
-        ]
-        self.optimizer = BertAdam(optimizer_grouped_parameters,
-                             lr=self.config['learning_rate'],
-                             warmup=self.config['warmup_proportion'],
-                             t_total=num_steps)
+        warmup_proportion = num_steps *self.config['warmup_proportion']
+
+        self.scheduler = get_linear_schedule_with_warmup(self.optimizer,
+                                                         warmup_steps=warmup_proportion,
+                                                         t_total=num_steps)
         self.epochs = 0
 
     def forward_pass(self, input_batch, labels):
@@ -38,6 +41,7 @@ class BertGeneralClassifier:
 
     def update_gradients(self):
         self.optimizer.step()
+        self.scheduler.step()
         self.optimizer.zero_grad()
 
     def save(self):
@@ -45,6 +49,7 @@ class BertGeneralClassifier:
             'epoch': self.epochs + 1,
             'bert_dict': self.model.state_dict(),
             'optimizer': self.optimizer.state_dict(),
+            'scheduler': self.scheduler.state_dict()
         }
         # Make the output directory structure if it doesnt exist
         if not os.path.exists(os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints")):
@@ -63,6 +68,7 @@ class BertGeneralClassifier:
             self.epochs = checkpoint['epoch']
             self.model.load_state_dict(checkpoint['bert_dict'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
+            self.scheduler.load_state_dict(checkpoint['scheduler'])
 
             # work around - for some reason reloading an optimizer that worked with CUDA tensors
             # causes an error - see https://github.com/pytorch/pytorch/issues/2830
