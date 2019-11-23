@@ -19,19 +19,21 @@ def save(summary, logits, labels, path, name):
 
 
 class Evaluator:
-    def __init__(self, classifier, path):
+    def __init__(self, classifier, path, config):
         self.classifier = classifier
         self.path = path
+        self.config = config
 
     def run(self, data, name):
         logging.info("Running Evaluations")
         # Put the classifier in training mode.
-        self.classifier.set_eval_mode()
+        device = torch.device(self.config['device'])
+        self.classifier.set_eval_mode(device)
 
         all_logits = None
         all_labels = None
         for step, batch in enumerate(tqdm(data.get(), desc="evaluating")):
-            batch = tuple(t.to(config.device) for t in batch)
+            batch = tuple(t.to(device) for t in batch)
             labels, features = batch
 
             with torch.no_grad():
