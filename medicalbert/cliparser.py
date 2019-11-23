@@ -56,4 +56,8 @@ def setup_parser():
                         default=None,
                         type=str,
                         help="tokenizer model to use")
+    parser.add_argument("--num_train_examples",
+                        default=None,
+                        type=int,
+                        help="number of training examples")
     return parser.parse_args()
