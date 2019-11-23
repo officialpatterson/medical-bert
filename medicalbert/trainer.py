@@ -23,7 +23,7 @@ class Trainer:
         for _ in trange(self.classifier.epochs, int(self.config['epochs']), desc="Epoch"):
             epoch_loss = 0
             num_steps = 0
-            batch = []
+            batche = []
             with tqdm(self.datareader.get_train(), desc="Iteration") as t:
                 for step, batch in enumerate(t):
 
@@ -35,15 +35,15 @@ class Trainer:
                     loss = outputs[0]
 
                     # Statistics
-                    batch.append(loss.item())
+                    batche.append(loss.item())
 
                     loss = loss / self.config['gradient_accumulation_steps']
 
                     loss.backward()
 
                     if (step + 1) % self.config['gradient_accumulation_steps'] == 0:
-                        batch_losses.append(mean(batch))
-                        print("batch: {}".format(mean(batch)))
+                        batch_losses.append(mean(batche))
+                        print("batch: {}".format(mean(batche)))
                         # Update the model gradients
                         self.classifier.update_gradients()
 
