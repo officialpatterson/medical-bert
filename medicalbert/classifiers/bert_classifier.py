@@ -6,7 +6,7 @@ from pytorch_pretrained_bert import BertAdam
 class BertGeneralClassifier:
     def __init__(self, config):
         self.config = config
-        self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'], 2)
+        self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
 
 
         # PyTorch scheduler
