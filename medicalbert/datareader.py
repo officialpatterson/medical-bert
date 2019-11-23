@@ -45,7 +45,7 @@ class DataReader:
         self.max_sequence_length = config['max_sequence_length']
         self.config = config
 
-    def get_dataset(self, dataset):
+    def get_dataset(self, dataset, resample = False):
         path = os.path.join(self.config['data_dir'], self.config['experiment_name'])
         saved_file = os.path.join(path, Path(dataset).stem + ".pt")
 
@@ -61,15 +61,16 @@ class DataReader:
         df = pd.read_csv(os.path.join(self.config['data_dir'], dataset), engine='python')
 
         # re=sample the data here.
-        df = resample(df)
+        if resample:
+            df = resample(df)
 
-        for index, row in tqdm(df.iterrows(), total=df.shape[0]):
+        for _, row in tqdm(df.iterrows(), total=df.shape[0]):
             # tokenize the text
-            tokens = self.tokenizer.tokenize(df['text'])
+            tokens = self.tokenizer.tokenize(row['text'])
 
             # convert to features
             feature_list.append(convert_to_features(tokens, self.tokenizer))
-            labels_list.append(df['readm_30d'])
+            labels_list.append(row['readm_30d'])
 
         all_labels = torch.tensor([f for f in labels_list], dtype=torch.long)
         all_texts = torch.tensor([f for f in feature_list], dtype=torch.long)
@@ -84,7 +85,8 @@ class DataReader:
         return td
 
     def get_train(self):
-        data = self.get_dataset(self.config['training_data'])
+        data = self.get_dataset(self.config['training_data'] , resample=True)
+        logging.info("shape of training data: {}".format(data.shape))
         actual_batch_size = self.config['train_batch_size'] // self.config['gradient_accumulation_steps']
         dataloader = DataLoader(data, shuffle=True, batch_size=actual_batch_size)
         return dataloader
