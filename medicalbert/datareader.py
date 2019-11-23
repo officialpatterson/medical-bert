@@ -48,6 +48,7 @@ class DataReader:
 
         df = pd.read_csv(os.path.join(self.config['data_dir'], dataset), engine='python')
 
+        df = df.sample(n=self.config['num_train_examples'])
 
         logging.info(df.shape)
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
