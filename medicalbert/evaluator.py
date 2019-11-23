@@ -32,7 +32,7 @@ class Evaluator:
 
         all_logits = None
         all_labels = None
-        for step, batch in enumerate(tqdm(data.get(), desc="evaluating")):
+        for step, batch in enumerate(tqdm(data, desc="evaluating")):
             batch = tuple(t.to(device) for t in batch)
             labels, features = batch
 
