@@ -88,7 +88,6 @@ class DataReader:
 
     def get_train(self):
         data = self.get_dataset(self.config['training_data'] , resample=True)
-        logging.info("shape of training data: {}".format(data.shape))
         actual_batch_size = self.config['train_batch_size'] // self.config['gradient_accumulation_steps']
         dataloader = DataLoader(data, shuffle=True, batch_size=actual_batch_size)
         return dataloader
