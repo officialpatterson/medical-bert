@@ -9,7 +9,7 @@ from tqdm import tqdm
 from imblearn.under_sampling import RandomUnderSampler
 
 
-def resample(t):
+def resample_data(t):
     t = t[['text', 'readm_30d']]
     label = t.pop('readm_30d')
 
@@ -62,7 +62,7 @@ class DataReader:
 
         # re=sample the data here.
         if resample:
-            df = resample(df)
+            df = resample_data(df)
 
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
             # tokenize the text
