@@ -1,9 +1,7 @@
 # This method is the public interface. We use this to get a dataset.
 # If a tensor dataset does not exist, we create it.
-import logging
-import config
-import os
-
+import logging, os
+from pathlib import Path
 import pandas as pd
 import torch
 from torch.utils.data import TensorDataset, DataLoader
@@ -28,15 +26,14 @@ def convert_to_features(tokens, tokenizer):
 
 class DataReader:
 
-    def __init__(self, datafile, tokenizer, max_sequence_length, batch_size):
+    def __init__(self, config, tokenizer):
         self.tokenizer = tokenizer
-        self.max_sequence_length = max_sequence_length
-        self.data = self.get_dataset(datafile)
-        self.batch_size = batch_size
+        self.max_sequence_length = config['max_sequence_length']
+        self.config = config
 
     def get_dataset(self, dataset):
-        path = os.path.join(config.checkpoint_location, config.run_name)
-        saved_file = os.path.join(config.checkpoint_location, config.run_name, dataset+".pt")
+        path = os.path.join(self.config['data_dir'], self.config['experiment_name'])
+        saved_file = os.path.join(path, Path(dataset).stem + ".pt")
 
         logging.info(saved_file)
         if os.path.isfile(saved_file):
@@ -47,7 +44,7 @@ class DataReader:
         labels_list = []
         logging.info("Building fresh dataset...")
 
-        df = pd.read_csv(os.path.join(config.data_dir, dataset), engine='python')
+        df = pd.read_csv(os.path.join(self.config['data_dir'], dataset), engine='python')
         for index, row in tqdm(df.iterrows(), total=df.shape[0]):
             # tokenize the text
             tokens = self.tokenizer.tokenize(row['text'])
@@ -68,6 +65,13 @@ class DataReader:
         torch.save(td, saved_file)
         return td
 
-    def get(self):
-        dataloader = DataLoader(self.data, shuffle=True, batch_size=self.batch_size)
+    def get_train(self):
+        data = self.get_dataset(self.config['training_data'])
+        actual_batch_size = self.config['train_batch_size'] // self.config['gradient_accumulation_steps']
+        dataloader = DataLoader(data, shuffle=True, batch_size=actual_batch_size)
+        return dataloader
+
+    def get_eval(self):
+        data = self.get_dataset(self.config['validation_data'])
+        dataloader = DataLoader(data, shuffle=False, batch_size=self.config['eval_batch_size'])
         return dataloader

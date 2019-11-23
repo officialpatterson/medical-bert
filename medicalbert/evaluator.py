@@ -1,4 +1,4 @@
-import logging, torch, config, json
+import logging, torch, json
 import os
 import pandas as pd
 import numpy as np
@@ -6,8 +6,8 @@ from sklearn.metrics import roc_auc_score, accuracy_score, average_precision_sco
 from tqdm import tqdm
 
 
-def save(summary, logits, labels, path):
-    json.dump(summary, open(os.path.join(path, "summary.json"), 'w'))
+def save(summary, logits, labels, path, name):
+    json.dump(summary, open(os.path.join(path, name, "summary.json"), 'w'))
 
     first_logit = pd.Series(logits[:,0])
     second_logit = pd.Series(logits[:,1])
@@ -15,13 +15,12 @@ def save(summary, logits, labels, path):
 
     frame = {'0': first_logit, '1': second_logit, 'label': labels}
 
-    pd.DataFrame(frame).to_csv(os.path.join(path, "output.csv"))
+    pd.DataFrame(frame).to_csv(os.path.join(path, name, "output.csv"))
 
 
 class Evaluator:
-    def __init__(self, classifier, datasets, path):
+    def __init__(self, classifier, path):
         self.classifier = classifier
-        self.datasets = datasets
         self.path = path
 
     def run(self, data, name):
@@ -54,8 +53,4 @@ class Evaluator:
 
         summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}
 
-        save(summary, all_logits, all_labels, self.path)
-
-    def run_all(self):
-        for name, dataset in self.datasets.items():
-            self.run(dataset, name)
+        save(summary, all_logits, all_labels, self.path, name)
