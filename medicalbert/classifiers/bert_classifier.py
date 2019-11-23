@@ -1,7 +1,6 @@
 import logging, os, torch
 
 from pytorch_transformers import BertForSequenceClassification
-from pytorch_transformers.modeling_bert import BertPreTrainedModel, BertModel, logger, BertConfig
 from pytorch_pretrained_bert import BertAdam
 class BertGeneralClassifier:
     def __init__(self, config):
