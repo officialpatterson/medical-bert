@@ -1,4 +1,4 @@
-from transformers import BertTokenizer
+from pytorch_transformers import BertTokenizer
 
 
 class TokenizerFactory:
