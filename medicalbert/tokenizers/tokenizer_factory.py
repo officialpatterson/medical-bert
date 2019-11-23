@@ -9,7 +9,4 @@ class TokenizerFactory:
         self._tokenizers[name] = tokenizer
 
     def make_tokenizer(self, name):
-        tokenizer = self._tokenizers.get(name)
-        if not tokenizer:
-            raise ValueError(format)
-        return BertTokenizer.from_pretrained(tokenizer)
+        return BertTokenizer.from_pretrained(name)

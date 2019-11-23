@@ -52,4 +52,8 @@ def setup_parser():
                         default=None,
                         type=str,
                         help="A pretrained model to train upon.")
+    parser.add_argument("--tokenizer",
+                        default=None,
+                        type=str,
+                        help="Tokenizer to use.")
     return parser.parse_args()
