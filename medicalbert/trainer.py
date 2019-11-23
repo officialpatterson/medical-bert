@@ -24,7 +24,7 @@ class Trainer:
             epoch_loss = 0
             num_steps = 0
             batche = []
-            epoch_loss
+            epoch_loss = []
             with tqdm(self.datareader.get_train(), desc="Iteration") as t:
                 for step, batch in enumerate(t):
 
