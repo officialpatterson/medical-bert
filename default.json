@@ -13,8 +13,8 @@
   "pretrained_model" : "bert-base-uncased",
   "experiment_name": "tail-only-general-undersampled",
   "epochs": 5,
-  "train_batch_size": 16,
-  "gradient_accumulation_steps": 8,
+  "train_batch_size": 64,
+  "gradient_accumulation_steps": 32,
   "eval_batch_size": 16,
-  "learning_rate": 0.00005
+  "learning_rate": 0.00002
 }
