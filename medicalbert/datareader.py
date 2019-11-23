@@ -46,7 +46,7 @@ class DataReader:
         self.config = config
 
     def get_dataset(self, dataset, resample = False):
-        path = os.path.join(self.config['data_dir'], self.config['experiment_name'])
+        path = os.path.join(self.config['output_dir'], self.config['experiment_name'])
         saved_file = os.path.join(path, Path(dataset).stem + ".pt")
 
         logging.info(saved_file)
