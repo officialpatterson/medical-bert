@@ -1,6 +1,6 @@
 from torch import nn
 from torch.nn import MSELoss, CrossEntropyLoss
-from transformers import BertPreTrainedModel, BertModel
+from pytorch_transformers import BertPreTrainedModel, BertModel
 
 
 class BertForSequenceClassification(BertPreTrainedModel):
