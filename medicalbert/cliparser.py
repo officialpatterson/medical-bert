@@ -46,6 +46,6 @@ def setup_parser():
                         help="name of the experiment")
     parser.add_argument("--learning_rate",
                         default=None,
-                        type=str,
+                        type=float,
                         help="learning_rate")
     return parser.parse_args()
