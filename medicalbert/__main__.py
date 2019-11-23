@@ -61,7 +61,7 @@ if __name__ == "__main__":
             if not os.path.exists(path):
                 os.makedirs(path)
 
-            evaluator = Evaluator(classifier, path)
+            evaluator = Evaluator(classifier, path, defconfig)
 
             evaluator.run(datareader.get_train(), "train")
             evaluator.run(datareader.get_eval(), "eval")
