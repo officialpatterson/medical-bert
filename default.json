@@ -3,7 +3,7 @@
   "output_dir" : "/home/strychl3/DATA/runs",
   "training_data" : "train.csv",
   "valid_data" :"test.csv",
-  "num_train_examples": 46070,
+  "num_train_examples": 100,
   "max_sequence_length": 510,
   "warmup_proportion": 0.1,
   "seed": 1234,
