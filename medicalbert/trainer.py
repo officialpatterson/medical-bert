@@ -35,6 +35,7 @@ class Trainer:
 
                     # Statistics
                     batch_losses.append(loss.item())
+                    print("{}\n".format(loss.item()))
 
                     loss = loss / self.config['gradient_accumulation_steps']
 
