@@ -1,8 +1,8 @@
 import logging, os, torch
+
+from pytorch_transformers import BertForSequenceClassification
 from transformers import AdamW
 from transformers import WarmupLinearSchedule as get_linear_schedule_with_warmup
-
-from classifiers.bert_model import BertForSequenceClassification
 
 
 class BertRandomClassifier:
