@@ -6,21 +6,7 @@ import pandas as pd
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
-from imblearn.under_sampling import RandomUnderSampler
 
-
-def resample_data(t):
-    t = t[['text', 'readm_30d']]
-    label = t.pop('readm_30d')
-
-    rus = RandomUnderSampler(random_state=42)
-    X, y = rus.fit_resample(t, label.astype('category'))
-
-    df = pd.DataFrame(X[:, 0])
-    df.columns = ['text']
-    df['readm_30d'] = pd.Series(y)
-
-    return df
 
 def convert_to_features(tokens, tokenizer):
 
@@ -45,7 +31,7 @@ class DataReader:
         self.max_sequence_length = config['max_sequence_length']
         self.config = config
 
-    def get_dataset(self, dataset, resample = False):
+    def get_dataset(self, dataset):
         path = os.path.join(self.config['output_dir'], self.config['experiment_name'])
         saved_file = os.path.join(path, Path(dataset).stem + ".pt")
 
@@ -60,10 +46,6 @@ class DataReader:
 
         df = pd.read_csv(os.path.join(self.config['data_dir'], dataset), engine='python')
 
-        # re=sample the data here.
-        if resample:
-            df = df.sample(n=self.config['num_train_examples'])
-            df = resample_data(df)
 
         logging.info(df.shape)
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
@@ -87,7 +69,7 @@ class DataReader:
         return td
 
     def get_train(self):
-        data = self.get_dataset(self.config['training_data'] , resample=True)
+        data = self.get_dataset(self.config['training_data'])
         actual_batch_size = self.config['train_batch_size'] // self.config['gradient_accumulation_steps']
 
         logging.info("Using gradient accumulation - physical batch size is {}".format(actual_batch_size))
