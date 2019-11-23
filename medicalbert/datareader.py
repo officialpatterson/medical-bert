@@ -65,6 +65,7 @@ class DataReader:
             df = df.sample(n=self.config['num_train_examples'])
             df = resample_data(df)
 
+        logging.info(df.shape)
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
             # tokenize the text
             tokens = self.tokenizer.tokenize(row['text'])
