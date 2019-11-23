@@ -38,7 +38,7 @@ def setup_parser():
                         help="random seed")
     parser.add_argument("--device",
                         default=None,
-                        type=int,
+                        type=str,
                         help="cpu or cuda")
     parser.add_argument("--experiment_name",
                         default=None,
