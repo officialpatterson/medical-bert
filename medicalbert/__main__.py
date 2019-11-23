@@ -63,8 +63,8 @@ if __name__ == "__main__":
 
             evaluator = Evaluator(classifier, path)
 
-            evaluator.run(datareader.get_train())
-            evaluator.run(datareader.get_eval())
+            evaluator.run(datareader.get_train(), "train")
+            evaluator.run(datareader.get_eval(), "eval")
 
 
 

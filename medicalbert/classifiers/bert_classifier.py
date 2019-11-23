@@ -4,6 +4,7 @@ from transformers import WarmupLinearSchedule as get_linear_schedule_with_warmup
 
 from classifiers.bert_model import BertForSequenceClassification
 
+
 class BertRandomClassifier:
     def __init__(self, config):
         self.config = config
