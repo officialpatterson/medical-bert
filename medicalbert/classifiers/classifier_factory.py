@@ -1,10 +1,10 @@
 # Factory for making new Classifier objects
-from classifiers.bert_classifier import BertGeneralClassifier, BertRandomClassifier
+from classifiers.bert_classifier import BertGeneralClassifier
 
 
 class ClassifierFactory:
     def __init__(self, config):
-        self._classifiers = {"bert-general": BertGeneralClassifier, "bert-random": BertRandomClassifier}
+        self._classifiers = {"bert-general": BertGeneralClassifier}
         self.config = config
 
     def register_classifier(self, name, classifier):
