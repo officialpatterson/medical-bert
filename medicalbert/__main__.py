@@ -28,8 +28,8 @@ if __name__ == "__main__":
     set_random_seeds(defconfig['seed'])
 
     # Load the tokenizer to use
-    tokenizer = TokenizerFactory()
-    tokenizer.make_tokenizer(defconfig['tokenizer'])
+    tokenizerFactory = TokenizerFactory()
+    tokenizer = tokenizerFactory.make_tokenizer(defconfig['tokenizer'])
 
     # Build a classifier object to use
     classifierFactory = ClassifierFactory(defconfig)
