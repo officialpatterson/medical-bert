@@ -4,7 +4,7 @@ import os
 
 import torch
 from tqdm import tqdm, trange
-
+from statistics import mean
 
 class Trainer:
     def __init__(self, config, classifier, datareader):
@@ -23,6 +23,7 @@ class Trainer:
         for _ in trange(self.classifier.epochs, int(self.config['epochs']), desc="Epoch"):
             epoch_loss = 0
             num_steps = 0
+            batch = []
             with tqdm(self.datareader.get_train(), desc="Iteration") as t:
                 for step, batch in enumerate(t):
 
@@ -34,14 +35,15 @@ class Trainer:
                     loss = outputs[0]
 
                     # Statistics
-                    batch_losses.append(loss.item())
-                    print("{}\n".format(loss.item()))
+                    batch.append(loss.item())
 
                     loss = loss / self.config['gradient_accumulation_steps']
 
                     loss.backward()
 
                     if (step + 1) % self.config['gradient_accumulation_steps'] == 0:
+                        batch_losses.append(mean(batch))
+                        print("batch: {}".format(mean(batch)))
                         # Update the model gradients
                         self.classifier.update_gradients()
 
