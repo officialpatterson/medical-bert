@@ -9,4 +9,4 @@ class TokenizerFactory:
         self._tokenizers[name] = tokenizer
 
     def make_tokenizer(self, name):
-        return BertTokenizer.from_pretrained(name)
+        return BertTokenizer.from_pretrained(name, do_lower_case=True)
