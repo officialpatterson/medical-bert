@@ -7,7 +7,7 @@
   "max_sequence_length": 510,
   "warmup_proportion": 0.1,
   "seed": 1234,
-  "device": "cpu",
+  "device": "cuda",
   "classifier" : "bert-general",
   "tokenizer" : "bert-base-uncased",
   "pretrained_model" : "bert-base-uncased",
