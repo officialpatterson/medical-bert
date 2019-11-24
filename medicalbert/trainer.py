@@ -44,6 +44,7 @@ class Trainer:
 
                     if (step + 1) % self.config['gradient_accumulation_steps'] == 0:
                         batch_losses.append(mean(batche))
+                        print("{}\n".format(batche))
                         epoch_loss.append(mean(batche))
                         # Update the model gradients
                         self.classifier.update_gradients()
