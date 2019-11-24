@@ -7,7 +7,8 @@ import torch
 from pytorch_pretrained_bert import BertAdam
 from pytorch_transformers import BertTokenizer, CONFIG_NAME, WEIGHTS_NAME
 from pytorch_transformers.modeling_bert import BertPreTrainedModel, BertModel, logger, BertConfig
-from sklearn.metrics import roc_auc_score, accuracy_score, average_precision_score
+from sklearn.metrics import roc_auc_score, accuracy_score
+from tensorflow.python.ops import nn
 from torch.nn import MSELoss, CrossEntropyLoss, AvgPool1d
 
 import torch.nn as nn
@@ -20,87 +21,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 n_gpu = torch.cuda.device_count()
 print("Number of GPUS: {}".format(n_gpu))
 CONST_NUM_SEQUENCES = 10
-
-
-# This module creates a single atomic unit for representing BERT, with multiple BERTs being
-class ReadmissionRNN(BertPreTrainedModel):
-
-    #Using this module requires a pretrained Bert object to be passed
-    def __init__(self, config):
-        super(ReadmissionRNN, self).__init__(config)
-        self.num_labels = config.num_labels
-
-        self.bert = BertModel(config)
-
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.apply(self.init_weights)
-
-    class ReadmissionRNN(BertPreTrainedModel):
-
-        # Using this module requires a pretrained Bert object to be passed
-        def __init__(self, config):
-            super(ReadmissionRNN, self).__init__(config)
-            self.num_labels = config.num_labels
-
-            self.bert = BertModel(config)
-
-            self.dropout = nn.Dropout(config.hidden_dropout_prob)
-            self.apply(self.init_weights)
-
-        def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None,
-                    position_ids=None, head_mask=None):
-            outputs = self.bert(input_ids, position_ids=position_ids, token_type_ids=token_type_ids,
-                                attention_mask=attention_mask, head_mask=head_mask)
-
-            final_layer = outputs[2][12][0][0]  # This is the correct one
-
-            return final_layer
-
-
-class ReadmissionBert(nn.Module):
-
-    # AS input all our data is shaped so that it is (documents, segments)
-    # that is, we have multiple segments per document.
-    def __init__(self, bert, labels):
-        super(ReadmissionBert, self).__init__()
-
-        self.num_labels = labels
-
-        self.bert = bert
-
-        self.linear = nn.Linear(768*CONST_NUM_SEQUENCES, self.num_labels)
-
-    def forward(self, text, labels):
-        # We loop over all the sequences to get the bert representaions
-        pooled_layer_output = []
-        for i in range(len(text)):
-            bert_outputs = []
-            for j in range(len(text[i])):
-                bert_out = self.bert(text[i][j].unsqueeze(0))
-
-                bert_outputs.append(bert_out)
-
-            bs = torch.stack(bert_outputs).view(-1)
-
-            pooled_layer_output.append(bs)
-
-            # Flatten the input so that we have a single dimension for all the bert pooled layer.
-        pooled_layer_output = torch.stack(pooled_layer_output)
-
-
-        logits = self.linear(pooled_layer_output) #We only use the output of the last hidden layer.
-
-        outputs = (logits,)  # add hidden states and attention if they are here
-
-        if labels is not None:
-            loss_fct = CrossEntropyLoss()
-            loss = loss_fct(logits, labels.view(-1))
-            outputs = (loss,) + outputs
-
-        return outputs
-
-
 def convert_to_features(tokens, tokenizer):
+    features = []
 
     # 2. Truncate sequence if it exceeds our maximum sequence length.
     seq_len = len(tokens)
@@ -131,15 +53,104 @@ def convert_to_features(tokens, tokenizer):
     return input_ids, input_mask, segment_ids, tokens
 
 
+# This module creates a single atomic unit for representing BERT, with multiple BERTs being
+class ReadmissionRNN(BertPreTrainedModel):
+
+    #Using this module requires a pretrained Bert object to be passed
+    def __init__(self, config):
+        super(ReadmissionRNN, self).__init__(config)
+        self.num_labels = config.num_labels
+
+        self.bert = BertModel(config)
+
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+        self.apply(self.init_weights)
+
+
+    def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None,
+                position_ids=None, head_mask=None):
+
+        outputs = self.bert(input_ids, position_ids=position_ids, token_type_ids=token_type_ids,
+                            attention_mask=attention_mask, head_mask=head_mask)
+        pooled_output = outputs[1]
+
+        pooled_output = self.dropout(pooled_output)
+
+        return pooled_output
+
+
+class ReadmissionBert(nn.Module):
+
+    # AS input all our data is shaped so that it is (documents, segments)
+    # that is, we have multiple segments per document.
+    def __init__(self, bert, labels):
+        super(ReadmissionBert, self).__init__()
+
+        self.num_labels = labels
+
+        self.bert = bert
+        self.dropout = nn.Dropout(p=0.2)
+
+        self.linear = nn.Linear(768, self.num_labels)
+
+    def forward(self, text, labels):
+        # We loop over all the sequences to get the bert representaions
+        pooled_layer_output = []
+        for i in range(len(text)):
+            bert_outputs = []
+            for j in range(len(text[i])):
+                bert_out = self.bert(text[i][j].unsqueeze(0))
+
+                bert_outputs.append(bert_out)
+
+            bs = torch.stack(bert_outputs)
+            print(bs.shape)
+            pooled_layer_output.append(bs.view())
+
+            # Flatten the input so that we have a single dimension for all the bert pooled layer.
+        pooled_layer_output = torch.stack(pooled_layer_output)
+
+        logits = self.linear(self.dropout(pooled_layer_output)) #We only use the output of the last hidden layer.
+
+        outputs = (logits,)  # add hidden states and attention if they are here
+
+        if labels is not None:
+            loss_fct = CrossEntropyLoss()
+            loss = loss_fct(logits, labels.view(-1))
+            outputs = (loss,) + outputs
+
+        return outputs
+
+
+# This function below takes a dataframe and tokenizes it, converting it to sequneces of numbers.
+def tokenize(tokenizer, df, max_sections):
+    texts = []
+    for index, row in df.iterrows():
+        tokens = tokenizer.tokenize(row['text'])
+        ids = tokenizer.convert_tokens_to_ids(tokens)
+
+
+        if len(ids) <510:
+            padding = [0] * ((510*max_sections) - len(ids))
+            ids += padding
+        else:
+            ids = ids[:510]
+
+        assert len(ids) == 510
+
+        texts.append(ids)
+    return texts
+
+
 def make_features_from_text(text, tokenizer):
-    tokens = tokenizer.tokenize(text)
-    num_sections = int(len(tokens) / 510)
+    num_sections = int(len(text) / 510)
 
     sections = []
     for t in range(num_sections):
-        this_section = tokens[t * 510:(t + 1) * 510]
+        this_section = text[t * 510:(t + 1) * 510]
 
-        input_ids, input_mask, segment_ids, _ = convert_to_features(this_section, tokenizer)
+        tokens = tokenizer.tokenize(this_section)
+        input_ids, input_mask, segment_ids, tokens = convert_to_features(tokens, tokenizer)
 
         sections.append(input_ids)
 
@@ -147,7 +158,7 @@ def make_features_from_text(text, tokenizer):
     # Pad the sequences.
     while len(sections) < CONST_NUM_SEQUENCES:
 
-        input_ids, input_mask, segment_ids, _ = convert_to_features([0], tokenizer)
+        input_ids, input_mask, segment_ids, tokens = convert_to_features([0], tokenizer)
 
         sections.append(input_ids)
 
@@ -158,14 +169,6 @@ def setup_parser():
     parser = argparse.ArgumentParser()
 
     ## Required parameters
-    parser.add_argument("--use_cache",
-                        default=None,
-                        type=str,
-                        help="Name of the directory for caching the vectors.")
-    parser.add_argument("--checkpoint",
-                        default=None,
-                        type=str,
-                        help="Name of the directory for loading checkpoint for warm start training.")
     parser.add_argument("--data_dir",
                         default=None,
                         type=str,
@@ -175,7 +178,8 @@ def setup_parser():
                         help="Bert pre-trained model selected in the list: bert-base-uncased, "
                              "bert-large-uncased, bert-base-cased, bert-large-cased, bert-base-multilingual-uncased, "
                              "bert-base-multilingual-cased, bert-base-chinese, biobert.")
-
+    parser.add_argument("--drbert_model", default=None, type=str, required=False,
+                        help="Load fine-tuned Dr. Bert")
     parser.add_argument("--output_dir",
                         default=None,
                         type=str,
@@ -186,7 +190,6 @@ def setup_parser():
     parser.add_argument("--do_train",
                         action='store_true',
                         help="Whether to run training.")
-
     parser.add_argument("--do_eval",
                         action='store_true',
                         help="Whether to run eval on the dev set.")
@@ -232,6 +235,18 @@ def setup_parser():
                         type=int,
                         default=1,
                         help="Number of updates steps to accumulate before performing a backward/update pass.")
+    parser.add_argument('--fp16',
+                        action='store_true',
+                        help="Whether to use 16-bit float precision instead of 32-bit")
+    parser.add_argument('--loss_scale',
+                        type=float, default=0,
+                        help="Loss scaling to improve fp16 numeric stability. Only used when fp16 set to True.\n"
+                             "0 (default value): dynamic loss scaling.\n"
+                             "Positive power of 2: static loss scaling value.\n")
+    parser.add_argument('--server_ip', type=str, default='', help="Can be used for distant debugging.")
+    parser.add_argument('--server_port', type=str, default='', help="Can be used for distant debugging.")
+    parser.add_argument('--model_loc', type=str, default='',
+                        help="Specify the location of the bio or clinical bert model")
     return parser
 
 
@@ -241,12 +256,10 @@ def make_dataset(df):
     labels_list = []
     print("converting to features")
     total_sections = 0
-
     for index, row in tqdm(df.iterrows(), total=df.shape[0]):
         features = make_features_from_text(row['text'], tokenizer)
-
         total_sections = total_sections + len(features)
-        feature_list.append(features[:CONST_NUM_SEQUENCES])
+        feature_list.append(features[-CONST_NUM_SEQUENCES:])
         labels_list.append(row['label'])
 
     assert len(feature_list) == len(feature_list)
@@ -287,40 +300,23 @@ if __name__ == "__main__":
         raise ValueError("At least one of `do_train` or `do_eval` must be True.")
 
     if args.do_train:
-        #make the output directory if it doesnt exist.
+
+        if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train:
+            raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
         if not os.path.exists(args.output_dir):
             os.makedirs(args.output_dir)
 
         tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=True)
 
-        model = ReadmissionRNN.from_pretrained(args.bert_model, output_hidden_states=True)
+        model = ReadmissionRNN.from_pretrained(args.bert_model)
 
         rad = ReadmissionBert(model, 2)
 
         print("reading training data")
+        train = pd.read_csv(os.path.join(args.data_dir, "train.csv"))
 
-        # if the use_cache directory has been specified then check if the vectors are in that directoy
-        # if they are not, then create and store them.
-        if args.use_cache:
-            if not os.path.exists(args.use_cache):
-                os.makedirs(args.use_cache)
-
-            if os.path.isfile(os.path.join(args.use_cache, "train.csv")):
-                print("Using cached vectors")
-                train_data = torch.load(os.path.join(args.use_cache, "train.csv"))
-            else:
-
-                train = pd.read_csv(os.path.join(args.data_dir, "train.csv"))
-
-                train = train.sample(frac=1)
-                train_data = make_dataset(train)
-
-                torch.save(train_data, os.path.join(args.use_cache, "train.csv"))
-        else:
-            train = pd.read_csv(os.path.join(args.data_dir, "train.csv"))
-
-            train = train.sample(frac=1)
-            train_data = make_dataset(train)
+        train = train.sample(frac=1)
+        train_data = make_dataset(train)
         train_sampler = RandomSampler(train_data)
 
         train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.train_batch_size)
@@ -328,50 +324,28 @@ if __name__ == "__main__":
         global_step = 0
         nb_tr_steps = 0
         tr_loss = 0
+        param_optimizer = list(rad.named_parameters())
         no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
-            {'params': rad.bert.parameters(), 'lr': args.learning_rate}
+            {'params': rad.bert.parameters(), 'lr': args.learning_rate/4}
         ]
         num_train_optimization_steps = int(
-            len(train_data) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
-
+            len(train) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
         optimizer = BertAdam(optimizer_grouped_parameters,
                              lr=args.learning_rate,
                              warmup=args.warmup_proportion,
                              t_total=num_train_optimization_steps)
-        total_loss = 0
-        total_steps = 0
 
-        start_epoch = 0
-        #if we have a checkpoint to restore training from, use that
-        if args.checkpoint:
-            print("=> loading checkpoint '{}'".format(args.checkpoint))
-            checkpoint = torch.load(args.checkpoint)
-            start_epoch = checkpoint['epoch']
-            rad.load_state_dict(checkpoint['readmission_dict'])
-            model.load_state_dict(checkpoint['bert_dict'])
-            optimizer.load_state_dict(checkpoint['optimizer'])
-
-            #work around - for some reason reloading an optimizer that worked with CUDA tensors
-            # causes an error - see https://github.com/pytorch/pytorch/issues/2830
-            for state in optimizer.state.values():
-                for k, v in state.items():
-                    if isinstance(v, torch.Tensor):
-                        state[k] = v.cuda()
 
         print(rad)
         model.to(device)
-
-        rad.to(device)
-
-        # if we have mulitople GPU's wrap them to take advantage of multiple GPUS.
-        if n_gpu > 1:
-            model = torch.nn.DataParallel(model)
-            rad = torch.nn.DataParallel(rad)
-
         model.train()
+        rad.to(device)
         rad.train()
-        for _ in trange(start_epoch, int(args.num_train_epochs), desc="Epoch"):
+
+        total_loss = 0
+        total_steps = 0
+        for _ in trange(int(args.num_train_epochs), desc="Epoch"):
             tr_loss = 0 #records the loss for the epoch
             nb_tr_examples, nb_tr_steps = 0, 0
             batch_loss = 0
@@ -405,59 +379,23 @@ if __name__ == "__main__":
                         global_step += 1
                         batch_loss = 0
 
-            checkpoint = {
-                'epoch': _ + 1,
-                'readmission_dict': rad.state_dict(),
-                'bert_dict': model.state_dict(),
-                'optimizer': optimizer.state_dict()
-            }
-            # model checkpoint, saves the optimizer as well
-            torch.save(checkpoint, os.path.join(args.output_dir, str(_+1)))
 
+            torch.save(rad, os.path.join(args.output_dir, str(_)))
 
     if args.do_eval:
         tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=True)
 
         if not args.do_train:
-            checkpoint = torch.load(args.checkpoint)
-
-            #initialise the models
-            model = ReadmissionRNN.from_pretrained(args.bert_model, output_hidden_states=True)
-            rad = ReadmissionBert(model, 2)
-
-            #load the configs
-            rad.load_state_dict(checkpoint['readmission_dict'])
-            model.load_state_dict(checkpoint['bert_dict'])
+            rad = torch.load(os.path.join(args.drbert_model), map_location=device)
 
         rad.to(device)
 
         rad.eval()
 
         def evaluate(df, rad):
+            train = pd.read_csv(os.path.join(args.data_dir, df))
 
-            # check if we have cached the vectors before
-            if args.use_cache:
-                if not os.path.exists(args.use_cache):
-                    os.makedirs(args.use_cache)
-
-                # if the cached vectors exist, load them, else, make and cache them.
-                if os.path.isfile(os.path.join(args.use_cache, df)):
-                    print("Using cached vectors")
-                    train_data = torch.load(os.path.join(args.use_cache, df))
-                else:
-
-                    train = pd.read_csv(os.path.join(args.data_dir, df))
-
-                    train = train.sample(frac=1)
-                    train_data = make_dataset(train)
-
-                    torch.save(train_data, os.path.join(args.use_cache, df))
-            else:
-                train = pd.read_csv(os.path.join(args.data_dir, df))
-
-                train = train.sample(frac=1)
-                train_data = make_dataset(train)
-
+            train_data = make_dataset(train)
             train_sampler = SequentialSampler(train_data)
 
             eval_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=args.eval_batch_size)
@@ -520,15 +458,10 @@ if __name__ == "__main__":
         train_roc = roc_auc_score(train_csv['label'], train_csv['1'])
         test_roc = roc_auc_score(test_csv['label'], test_csv['1'])
 
-        train_avp = average_precision_score(train_csv['label'], train_csv['1'])
-        test_avp = average_precision_score(test_csv['label'], test_csv['1'])
-
         train_results['roc'] = train_roc
         test_results['roc'] = test_roc
         train_results['acc'] = train_acc
         test_results['acc'] = test_acc
-        train_results['avp'] = train_avp
-        test_results['avp'] = test_avp
         results = {"train": train_results, "test": test_results}
 
         print(results)
