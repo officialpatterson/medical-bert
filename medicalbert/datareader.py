@@ -62,7 +62,7 @@ class DataReader:
 
             # convert to features
             feature_list.append(convert_to_features(tokens, self.tokenizer))
-            labels_list.append(row[self.config.target])
+            labels_list.append(row[self.config['target']])
 
         all_labels = torch.tensor([f for f in labels_list], dtype=torch.long)
         all_texts = torch.tensor([f for f in feature_list], dtype=torch.long)
