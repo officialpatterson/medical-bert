@@ -1,9 +1,9 @@
 {
-  "data_dir" : "/home/strychl3/DATA/datasets/no-death-undersampled",
+  "data_dir" : "/home/strychl3/pytorch-bert/data",
   "output_dir" : "/home/strychl3/DATA/runs",
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
-  "num_train_examples": 500,
+  "num_train_examples": 7557,
   "max_sequence_length": 510,
   "warmup_proportion": 0.1,
   "seed": 1234,
@@ -11,10 +11,10 @@
   "classifier" : "bert-general",
   "tokenizer" : "bert-base-uncased",
   "pretrained_model" : "bert-base-uncased",
-  "experiment_name": "tail-only-general-undersampled",
+  "experiment_name": "tail-only-alsentzer-old-data",
   "epochs": 5,
   "train_batch_size": 64,
   "gradient_accumulation_steps": 32,
   "eval_batch_size": 16,
-  "learning_rate": 0.00002
+  "learning_rate": 0.00005
 }

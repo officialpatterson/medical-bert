@@ -51,6 +51,9 @@ class DataReader:
         df = df.sample(n=self.config['num_train_examples'])
 
         logging.info(df.shape)
+        #Some light preprocessing
+        df['text'] = df['text'].str.replace(r'\t', ' ', regex=True)
+        df['text'] = df['text'].str.replace(r'\n', ' ', regex=True)
         df['text'] = df['text'].str.lower()
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
 
