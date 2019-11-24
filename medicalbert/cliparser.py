@@ -60,4 +60,8 @@ def setup_parser():
                         default=None,
                         type=int,
                         help="number of training examples")
+    parser.add_argument("--target",
+                        default=None,
+                        type=str,
+                        help="target column")
     return parser.parse_args()

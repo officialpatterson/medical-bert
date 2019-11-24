@@ -16,5 +16,6 @@
   "train_batch_size": 64,
   "gradient_accumulation_steps": 32,
   "eval_batch_size": 16,
-  "learning_rate": 0.00005
+  "learning_rate": 0.00005,
+  "target": "label"
 }

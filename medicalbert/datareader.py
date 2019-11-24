@@ -51,7 +51,7 @@ class DataReader:
         df = df.sample(n=self.config['num_train_examples'])
 
         logging.info(df.shape)
-        #Some light preprocessing
+        # Some light preprocessing
         df['text'] = df['text'].str.replace(r'\t', ' ', regex=True)
         df['text'] = df['text'].str.replace(r'\n', ' ', regex=True)
         df['text'] = df['text'].str.lower()
@@ -62,7 +62,7 @@ class DataReader:
 
             # convert to features
             feature_list.append(convert_to_features(tokens, self.tokenizer))
-            labels_list.append(row['readm_30d'])
+            labels_list.append(row[self.config.target])
 
         all_labels = torch.tensor([f for f in labels_list], dtype=torch.long)
         all_texts = torch.tensor([f for f in feature_list], dtype=torch.long)
