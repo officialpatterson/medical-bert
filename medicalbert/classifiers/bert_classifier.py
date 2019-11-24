@@ -1,8 +1,8 @@
 import logging, os, torch
 
-from transformers import AdamW
+from transformers import AdamW, BertForSequenceClassification
 from transformers import WarmupLinearSchedule as get_linear_schedule_with_warmup
-from classifiers.bert_model import BertForSequenceClassification
+from pytorch_pretrained_bert import BertAdam
 
 
 class BertGeneralClassifier:
@@ -11,7 +11,7 @@ class BertGeneralClassifier:
         self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
 
         # To reproduce BertAdam specific behavior set correct_bias=False
-        self.optimizer = AdamW(self.model.parameters(), lr=self.config['learning_rate'], correct_bias=False)
+        #self.optimizer = AdamW(self.model.parameters(), lr=self.config['learning_rate'], correct_bias=False)
 
         # PyTorch scheduler
         num_steps = int(self.config['num_train_examples'] / self.config['train_batch_size'] /
@@ -23,6 +23,16 @@ class BertGeneralClassifier:
         self.scheduler = get_linear_schedule_with_warmup(self.optimizer,
                                                          warmup_steps=warmup_proportion,
                                                          t_total=num_steps)
+
+        optimizer_grouped_parameters = [
+            {'params': self.model.parameters(), 'lr':self.config['learning_rate']}
+        ]
+
+
+        self.optimizer = BertAdam(optimizer_grouped_parameters,
+                             lr=self.config['learning_rate'],
+                             warmup=self.config['warmup_proportion'],
+                             t_total=num_steps)
         self.epochs = 0
 
     def forward_pass(self, input_batch, labels):
@@ -41,7 +51,6 @@ class BertGeneralClassifier:
 
     def update_gradients(self):
         self.optimizer.step()
-        self.scheduler.step()
         self.optimizer.zero_grad()
 
     def save(self):

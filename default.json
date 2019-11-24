@@ -13,9 +13,9 @@
   "pretrained_model" : "bert-base-uncased",
   "experiment_name": "tail-only-alsentzer-old-data",
   "epochs": 5,
-  "train_batch_size": 64,
-  "gradient_accumulation_steps": 32,
+  "train_batch_size": 16,
+  "gradient_accumulation_steps": 4,
   "eval_batch_size": 16,
-  "learning_rate": 0.00005,
+  "learning_rate": 0.00001,
   "target": "label"
 }
