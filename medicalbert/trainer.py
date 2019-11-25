@@ -3,7 +3,7 @@ import logging
 import os
 
 import torch
-from pytorch_transformers import BertForSequenceClassification
+from transformers import BertForSequenceClassification
 from tqdm import tqdm, trange
 from statistics import mean
 from pytorch_pretrained_bert import BertAdam
