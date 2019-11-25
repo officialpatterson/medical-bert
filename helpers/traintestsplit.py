@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 def split_data(admissions, ratio):
 
     # Do some limited preprocessing
-    X = admissions[['HADM_ID', 'text']]
+    X = admissions[['text']]
     y = admissions['readm_30d']
 
     # Create a stratified train test split to preserver distribution.
