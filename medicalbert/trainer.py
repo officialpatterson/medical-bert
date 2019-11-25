@@ -55,8 +55,8 @@ class Trainer:
                     labels, features = batch
 
                     print(features.shape)
-
-                    outputs = model(features, labels)
+                
+                    outputs = model(features.view(-1,1) , labels)
 
                     loss = outputs[0]
 
