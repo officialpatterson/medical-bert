@@ -26,7 +26,7 @@ class Trainer:
                     self.config['epochs']
 
         optimizer_grouped_parameters = [
-            {'params': self.model.parameters(), 'lr': self.config['learning_rate']}
+            {'params': model.parameters(), 'lr': self.config['learning_rate']}
         ]
 
         optimizer = BertAdam(optimizer_grouped_parameters,
