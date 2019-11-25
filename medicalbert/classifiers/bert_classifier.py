@@ -73,10 +73,6 @@ class BertGeneralClassifier:
 
             self.classifier.epochs = self.classifier.epochs+1
 
-
-
-
-
     def set_eval_mode(self, device):
         self.model.eval()
         self.model.to(device)
