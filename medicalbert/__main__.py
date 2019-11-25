@@ -4,7 +4,6 @@ from config import get_configuration
 import numpy as np
 from datareader import DataReader
 from classifiers.classifier_factory import ClassifierFactory
-from trainer import Trainer
 from evaluator import Evaluator
 from cliparser import setup_parser
 from tokenizers.tokenizer_factory import TokenizerFactory
