@@ -12,9 +12,9 @@ class BertGeneralClassifier:
         self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
 
         num_steps = int(self.config['num_train_examples'] / self.config['train_batch_size'] /
-                        self.config['gradient_accumulation_steps']) * \
-                    self.config['epochs']
+                        self.config['gradient_accumulation_steps']) * self.config['epochs']
 
+        logging.info("{} optimisation steps".format(num_steps))
         optimizer_grouped_parameters = [
             {'params': self.model.parameters(), 'lr': self.config['learning_rate']}
         ]
