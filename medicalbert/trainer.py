@@ -57,7 +57,7 @@ class Trainer:
                     print(features.shape)
                     print(labels.shape)
 
-                    outputs = model(features, labels)
+                    outputs = model(features, labels=labels)
 
                     loss = outputs[0]
 
