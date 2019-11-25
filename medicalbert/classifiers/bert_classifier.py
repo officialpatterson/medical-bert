@@ -91,7 +91,6 @@ class BertGeneralClassifier:
             'epoch': self.epochs + 1,
             'bert_dict': self.model.state_dict(),
             'optimizer': self.optimizer.state_dict(),
-            'scheduler': self.scheduler.state_dict()
         }
         # Make the output directory structure if it doesnt exist
         if not os.path.exists(os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints")):
@@ -110,7 +109,6 @@ class BertGeneralClassifier:
             self.epochs = checkpoint['epoch']
             self.model.load_state_dict(checkpoint['bert_dict'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
-            self.scheduler.load_state_dict(checkpoint['scheduler'])
 
             # work around - for some reason reloading an optimizer that worked with CUDA tensors
             # causes an error - see https://github.com/pytorch/pytorch/issues/2830
@@ -127,7 +125,6 @@ class BertGeneralClassifier:
             self.epochs = checkpoint['epoch']
             self.model.load_state_dict(checkpoint['bert_dict'])
             self.optimizer.load_state_dict(checkpoint['optimizer'])
-            self.scheduler.load_state_dict(checkpoint['scheduler'])
 
             # work around - for some reason reloading an optimizer that worked with CUDA tensors
             # causes an error - see https://github.com/pytorch/pytorch/issues/2830
