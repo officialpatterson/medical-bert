@@ -37,7 +37,7 @@ class BertGeneralClassifier:
         self.epochs = 0
 
     def forward_pass(self, input_batch, labels):
-        return self.model(input_batch)
+        return self.model(input_batch, labels=labels)
 
     def set_train_mode(self, device):
         self.model.train()
