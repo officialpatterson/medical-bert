@@ -27,6 +27,8 @@ if __name__ == "__main__":
 
     set_random_seeds(defconfig['seed'])
 
+
+
     # Load the tokenizer to use
     tokenizerFactory = TokenizerFactory()
     tokenizer = tokenizerFactory.make_tokenizer(defconfig['tokenizer'])
@@ -38,6 +40,7 @@ if __name__ == "__main__":
     # load the data
     datareader = DataReader(defconfig, tokenizer)
 
+
     if args.train:
 
         # Load from checkpoint if we're using one (won't do anything if were not)
@@ -45,10 +48,7 @@ if __name__ == "__main__":
             classifier.load_from_checkpoint()
 
         # Pass the classifier to the trainer
-        trainer = Trainer(defconfig, classifier, datareader)
-
-        # Do the training
-        trainer.run()
+        classifier.train(datareader)
 
     if args.eval:
 
