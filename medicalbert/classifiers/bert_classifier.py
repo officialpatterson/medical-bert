@@ -32,7 +32,7 @@ class BertGeneralClassifier:
         self.model.train()
         self.model.to(device)
 
-        for _ in trange(self.classifier.epochs, int(self.config['epochs']), desc="Epoch"):
+        for _ in trange(self.epochs, int(self.config['epochs']), desc="Epoch"):
             epoch_loss = 0
             num_steps = 0
             batche = []
@@ -71,7 +71,7 @@ class BertGeneralClassifier:
             # save a checkpoint here
             self.classifier.save()
 
-            self.classifier.epochs = self.classifier.epochs+1
+            self.epochs = self.classifier.epochs+1
 
     def set_eval_mode(self, device):
         self.model.eval()
