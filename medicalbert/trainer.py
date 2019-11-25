@@ -54,6 +54,8 @@ class Trainer:
                     batch = tuple(t.to(device) for t in batch)
                     labels, features = batch
 
+                    print(features.shape)
+
                     outputs = model(features, labels)
 
                     loss = outputs[0]
