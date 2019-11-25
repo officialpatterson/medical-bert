@@ -79,12 +79,6 @@ class BertGeneralClassifier:
         self.model.eval()
         self.model.to(device)
 
-    def model_params(self):
-        return self.model.params
-
-    def update_gradients(self):
-        self.optimizer.step()
-        self.optimizer.zero_grad()
 
     def save(self):
         checkpoint = {

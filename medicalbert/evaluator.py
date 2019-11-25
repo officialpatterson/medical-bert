@@ -23,7 +23,7 @@ def save(summary, logits, labels, path, name):
 
 class Evaluator:
     def __init__(self, classifier, path, config):
-        self.classifier = classifier
+        self.model = classifier.model
         self.path = path
         self.config = config
 
@@ -31,7 +31,8 @@ class Evaluator:
         logging.info("Running Evaluations")
         # Put the classifier in training mode.
         device = torch.device(self.config['device'])
-        self.classifier.set_eval_mode(device)
+        self.model.eval()
+        self.model.to(device)
 
         all_logits = None
         all_labels = None
@@ -40,7 +41,7 @@ class Evaluator:
             labels, features = batch
 
             with torch.no_grad():
-                loss, logits = self.classifier.forward_pass(features, labels)
+                loss, logits = self.model(features, labels=labels)
 
             logits = logits.detach().cpu().numpy()
             label_ids = labels.detach().cpu().numpy()
