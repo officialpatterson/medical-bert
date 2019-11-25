@@ -48,8 +48,6 @@ class DataReader:
 
         df = pd.read_csv(os.path.join(self.config['data_dir'], dataset), engine='python')[:500]
 
-        df = df.sample(n=self.config['num_train_examples'])
-
         logging.info(df.shape)
         # Some light preprocessing
         df['text'] = df['text'].str.replace(r'\t', ' ', regex=True)
