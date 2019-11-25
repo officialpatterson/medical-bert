@@ -31,7 +31,9 @@ class Trainer:
                     batch = tuple(t.to(device) for t in batch)
                     labels, features = batch
 
-                    outputs = self.classifier.forward_pass(features)
+                    print(features)
+
+                    outputs = self.classifier.forward_pass(features, labels)
 
                     loss = outputs[0]
 
