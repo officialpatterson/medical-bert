@@ -80,7 +80,6 @@ class ReadmissionBert(nn.Module):
             # Flatten the input so that we have a single dimension for all the bert pooled layer.
         pooled_layer_output = torch.stack(pooled_layer_output)
 
-
         logits = self.linear(self.dropout(pooled_layer_output)) #We only use the output of the last hidden layer.
 
         outputs = (logits,)  # add hidden states and attention if they are here
@@ -135,7 +134,6 @@ def make_features_from_text(text, tokenizer):
         input_ids, input_mask, segment_ids, _ = convert_to_features(this_section, tokenizer)
 
         sections.append(input_ids)
-
 
     # Pad the sequences.
     while len(sections) < CONST_NUM_SEQUENCES:

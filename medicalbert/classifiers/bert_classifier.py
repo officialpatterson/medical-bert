@@ -51,6 +51,7 @@ class BertGeneralClassifier:
         return self.model.params
 
     def update_gradients(self):
+        logging.info("UPDATING GRADIENTS")
         self.optimizer.step()
         self.optimizer.zero_grad()
 
