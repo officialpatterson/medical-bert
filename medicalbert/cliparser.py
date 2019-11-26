@@ -64,4 +64,8 @@ def setup_parser():
                         default=None,
                         type=str,
                         help="target column")
+    parser.add_argument("--classifier",
+                        default=None,
+                        type=str,
+                        help="classifier to use")
     return parser.parse_args()
