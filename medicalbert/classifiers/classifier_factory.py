@@ -1,6 +1,6 @@
 # Factory for making new Classifier objects
 from classifiers.bert_classifier import BertGeneralClassifier
-from classifiers.bert_random_classifier BertRandomClassifier
+from classifiers.bert_random_classifier import BertRandomClassifier
 
 
 class ClassifierFactory:
