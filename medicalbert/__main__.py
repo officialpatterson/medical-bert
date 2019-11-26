@@ -60,8 +60,8 @@ if __name__ == "__main__":
             if not os.path.exists(path):
                 os.makedirs(path)
 
-            classifier.run_eval(datareader.get_train(), "train")
-            classifier.run_eval(datareader.get_eval(), "eval")
+            classifier.run_eval(datareader.get_train(), "train", path)
+            classifier.run_eval(datareader.get_eval(), "eval", path)
 
 
 

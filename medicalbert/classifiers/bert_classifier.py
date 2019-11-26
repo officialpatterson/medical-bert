@@ -95,7 +95,7 @@ class BertGeneralClassifier:
             self.epochs = self.epochs+1
 
 
-    def run_eval(self, data, name):
+    def run_eval(self, data, name, path):
         logging.info("Running Evaluations")
         # Put the classifier in training mode.
         device = torch.device(self.config['device'])
@@ -128,7 +128,8 @@ class BertGeneralClassifier:
         summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}
 
         print(summary)
-        save(summary, all_logits, all_labels, self.path, name)
+
+        save(summary, all_logits, all_labels, path, name)
 
 
     def save(self):
