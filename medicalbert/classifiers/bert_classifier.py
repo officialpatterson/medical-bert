@@ -127,6 +127,7 @@ class BertGeneralClassifier:
 
         summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}
 
+        print(summary)
         save(summary, all_logits, all_labels, self.path, name)
 
 
