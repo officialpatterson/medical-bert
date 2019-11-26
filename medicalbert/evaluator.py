@@ -27,3 +27,37 @@ class Evaluator:
         self.path = path
         self.config = config
 
+    def run(self, data, name):
+        logging.info("Running Evaluations")
+        # Put the classifier in training mode.
+        device = torch.device(self.config['device'])
+        self.model.eval()
+        self.model.to(device)
+
+        all_logits = None
+        all_labels = None
+        for step, batch in enumerate(tqdm(data, desc="evaluating")):
+            batch = tuple(t.to(device) for t in batch)
+            labels, features = batch
+
+            with torch.no_grad():
+                loss, logits = self.model(features, labels=labels)
+
+            logits = logits.detach().cpu().numpy()
+            label_ids = labels.detach().cpu().numpy()
+
+            if all_logits is not None:
+                all_logits = np.concatenate((all_logits, logits))
+                all_labels = np.concatenate([all_labels, label_ids])
+            else:
+                all_logits = logits
+                all_labels = label_ids
+
+        roc = roc_auc_score(all_labels, all_logits[:,0])
+        precision = average_precision_score(all_labels, all_logits[:,0])
+        accuracy = accuracy_score(all_labels, np.argmax(all_logits, axis=1))
+
+        summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}
+
+        print(summary)
+        save(summary, all_logits, all_labels, self.path, name)
