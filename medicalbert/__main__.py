@@ -52,7 +52,7 @@ if __name__ == "__main__":
     if args.eval:
 
         # Loop over all the checkpoints, running evaluations on all them.
-        path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results", "untrained")
+        path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results")
         if not os.path.exists(path):
             os.makedirs(path)
 
