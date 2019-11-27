@@ -58,9 +58,6 @@ if __name__ == "__main__":
 
         evaluator = Evaluator(classifier, path, defconfig)
 
-        evaluator.run(datareader.get_train(), "train")
-        evaluator.run(datareader.get_eval(), "train")
-
         for file in os.listdir(path):
             classifier.load_from_checkpoint(file)
 

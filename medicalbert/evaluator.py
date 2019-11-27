@@ -6,7 +6,7 @@ from sklearn.metrics import roc_auc_score, accuracy_score, average_precision_sco
 from tqdm import tqdm
 
 
-def save(summary, logits, labels, path, name):
+def save(summary, logits, labels, path, name, losses):
     path = os.path.join(path, name)
     if not os.path.exists(path):
         os.makedirs(path)
@@ -19,6 +19,10 @@ def save(summary, logits, labels, path, name):
     frame = {'0': first_logit, '1': second_logit, 'label': labels}
 
     pd.DataFrame(frame).to_csv(os.path.join(path, "output.csv"))
+
+    with open(os.path.join(path, "batch_loss.csv"), "a") as f:
+        for loss in losses:
+            f.write("{}\n".format(loss))
 
 
 class Evaluator:
@@ -36,6 +40,7 @@ class Evaluator:
 
         all_logits = None
         all_labels = None
+        all_losses = []
         for step, batch in enumerate(tqdm(data, desc="evaluating")):
             batch = tuple(t.to(device) for t in batch)
             labels, features = batch
@@ -43,6 +48,7 @@ class Evaluator:
             with torch.no_grad():
                 loss, logits = self.model(features, labels=labels)
 
+            all_losses.append(loss.item(0))
             logits = logits.detach().cpu().numpy()
             label_ids = labels.detach().cpu().numpy()
 
@@ -60,4 +66,4 @@ class Evaluator:
         summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}
 
         print(summary)
-        save(summary, all_logits, all_labels, self.path, name)
+        save(summary, all_logits, all_labels, self.path, name, all_losses)
