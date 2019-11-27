@@ -68,4 +68,8 @@ def setup_parser():
                         default=None,
                         type=str,
                         help="classifier to use")
+    parser.add_argument("--epochs",
+                        default=None,
+                        type=int,
+                        help="Number of epochs to train for")
     return parser.parse_args()
