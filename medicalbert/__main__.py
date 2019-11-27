@@ -52,7 +52,7 @@ if __name__ == "__main__":
     if args.eval:
 
         # Loop over all the checkpoints, running evaluations on all them.
-        path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results")
+        path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "checkpoints")
         if not os.path.exists(path):
             os.makedirs(path)
 
@@ -60,9 +60,9 @@ if __name__ == "__main__":
 
         for file in os.listdir(path):
 
-            path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results", file)
+            path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results")
 
-            classifier.load_from_checkpoint(path)
+            classifier.load_from_checkpoint(os.path.join(path, file))
             evaluator = Evaluator(classifier, path, defconfig)
 
             evaluator.run(datareader.get_train(), "train")
