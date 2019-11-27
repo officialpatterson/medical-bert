@@ -59,7 +59,7 @@ if __name__ == "__main__":
             # Load the checkpoint model
             classifier.load_from_checkpoint(os.path.join(checkpoints_path, checkpoint))
 
-            results_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results")
+            results_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results", checkpoint)
 
             evaluator = Evaluator(classifier, results_path, defconfig)
 
