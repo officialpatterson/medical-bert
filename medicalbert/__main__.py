@@ -59,13 +59,10 @@ if __name__ == "__main__":
         evaluator = Evaluator(classifier, path, defconfig)
 
         for file in os.listdir(path):
-            classifier.load_from_checkpoint(file)
 
             path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results", file)
 
-            if not os.path.exists(path):
-                os.makedirs(path)
-
+            classifier.load_from_checkpoint(path)
             evaluator = Evaluator(classifier, path, defconfig)
 
             evaluator.run(datareader.get_train(), "train")
