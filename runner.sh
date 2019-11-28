@@ -1,4 +1,4 @@
 #!/bin/bash
 python medicalbert/ --experiment_name bert-alsentzer-tail-only --tokenizer ~/DATA/pretrained_models/alsentzer-clinical/biobert_pretrain_output_disch_100000 --pretrained_model ~/DATA/pretrained_models/alsentzer-clinical/biobert_pretrain_output_disch_100000 --train --eval --target readm_30d --num_train_examples 2996 --classifier bert-general;
 python medicalbert/ --experiment_name bert-general-tail-only  --train --eval --target readm_30d --num_train_examples 2996 --classifier bert-general;
-python medicalbert/ --experiment_name bert-random-init-tail-only-trained --train --eval --target readm_30d --num_train_examples 2996 --classifier bert-random;
+nohup python medicalbert/ --experiment_name bert-random-init-tail-only-trained --eval --target readm_30d --num_train_examples 2996 --classifier bert-random > rand.out &
