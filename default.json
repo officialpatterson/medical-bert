@@ -1,5 +1,5 @@
 {
-  "data_dir" : "/home/strychl3/DATA/datasets/no-death-undersampled",
+  "data_dir" : "/home/strychl3/DATA/no-death",
   "output_dir" : "/home/strychl3/DATA/runs",
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
