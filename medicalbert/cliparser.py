@@ -72,4 +72,13 @@ def setup_parser():
                         default=None,
                         type=int,
                         help="Number of epochs to train for")
+    parser.add_argument("--train_batch_size",
+                        default=None,
+                        type=int,
+                        help="batch size during training phase")
+    parser.add_argument("--gradient_accumulation_steps",
+                        default=None,
+                        type=int,
+                        help="used to reduce GPU memory footprint")
+
     return parser.parse_args()
