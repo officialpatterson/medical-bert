@@ -36,7 +36,7 @@ if __name__ == "__main__":
     # load the data
     dataReaderFactory = DataReaderFactory(defconfig)
 
-    datareader = dataReaderFactory.make_datareader(defconfig, tokenizer)
+    datareader = dataReaderFactory.make_datareader(defconfig['datareader'], tokenizer)
 
     if args.train:
 
