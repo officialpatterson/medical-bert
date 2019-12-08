@@ -24,6 +24,10 @@ def setup_parser():
                         default=None,
                         type=str,
                         help="location of input data")
+    parser.add_argument("--output_dir",
+                        default=None,
+                        type=str,
+                        help="location of output")
     parser.add_argument("--training_data",
                         default=None,
                         type=str,
