@@ -2,7 +2,6 @@ import os, logging, torch
 import random
 from config import get_configuration
 import numpy as np
-from datareader import DataReader
 from classifiers.classifier_factory import ClassifierFactory
 from datareader.data_reader_factory import DataReaderFactory
 from evaluator import Evaluator
