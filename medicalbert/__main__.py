@@ -4,6 +4,7 @@ from config import get_configuration
 import numpy as np
 from datareader import DataReader
 from classifiers.classifier_factory import ClassifierFactory
+from datareader.data_reader_factory import DataReaderFactory
 from evaluator import Evaluator
 from cliparser import setup_parser
 from tokenizers.tokenizer_factory import TokenizerFactory
@@ -13,7 +14,6 @@ def set_random_seeds(seed):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-
 
 if __name__ == "__main__":
 
@@ -26,8 +26,6 @@ if __name__ == "__main__":
 
     set_random_seeds(defconfig['seed'])
 
-
-
     # Load the tokenizer to use
     tokenizerFactory = TokenizerFactory()
     tokenizer = tokenizerFactory.make_tokenizer(defconfig['tokenizer'])
@@ -37,8 +35,9 @@ if __name__ == "__main__":
     classifier = classifierFactory.make_classifier(defconfig['classifier'])
 
     # load the data
-    datareader = DataReader(defconfig, tokenizer)
+    dataReaderFactory = DataReaderFactory(defconfig)
 
+    datareader = dataReaderFactory.make_datareader(defconfig, tokenizer)
 
     if args.train:
 

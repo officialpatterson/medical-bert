@@ -1,6 +1,6 @@
 {
-  "data_dir" : "/home/strychl3/DATA/no-death",
-  "output_dir" : "/home/strychl3/DATA/runs",
+  "data_dir" : "gs://storage.andrewrpatterson.com/debug",
+  "output_dir" : "~/runs",
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
   "num_train_examples": 2996,
@@ -17,5 +17,6 @@
   "gradient_accumulation_steps": 4,
   "eval_batch_size": 16,
   "learning_rate": 0.00001,
-  "target": "label"
+  "target": "label",
+  "datareader": "one-doc"
 }

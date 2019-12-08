@@ -80,5 +80,8 @@ def setup_parser():
                         default=None,
                         type=int,
                         help="used to reduce GPU memory footprint")
-
+    parser.add_argument("--datareader",
+                        default=None,
+                        type=str,
+                        help="approach to reading the data from files.")
     return parser.parse_args()

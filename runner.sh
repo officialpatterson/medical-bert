@@ -1,4 +1,4 @@
 #!/bin/bash
 python medicalbert/ --experiment_name bert-alsentzer-tail-only-non-resampled --tokenizer ~/DATA/pretrained_models/alsentzer-clinical/biobert_pretrain_output_disch_100000 --pretrained_model ~/DATA/pretrained_models/alsentzer-clinical/biobert_pretrain_output_disch_100000 --train --eval --target readm_30d --num_train_examples 4194 --classifier bert-general;
 python medicalbert/ --experiment_name bert-general-tail-only-non-resampled  --train --eval --target readm_30d --num_train_examples 4194 --classifier bert-general;
-python python medicalbert/ --experiment_name bert-random-init-tail-only-trained-non-resampled --train --eval --target readm_30d --num_train_examples 4194 --classifier bert-random;
+python medicalbert/ --experiment_name bert-random-init-tail-only-trained-non-resampled --train --eval --target readm_30d --num_train_examples 4194 --classifier bert-random;
