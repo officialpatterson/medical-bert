@@ -161,7 +161,7 @@ class DataReader:
         labels_list = []
         logging.info("Building fresh dataset...")
 
-        df = pd.read_csv(os.path.join(self.config['data_dir'], dataset), engine='python')
+        df = pd.read_csv(os.path.join(self.config['data_dir'], dataset))
 
         logging.info(df.shape)
         # Some light preprocessing
