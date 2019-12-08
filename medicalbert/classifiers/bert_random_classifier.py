@@ -38,7 +38,7 @@ class BertRandomClassifier:
             {'params': self.model.parameters(), 'lr': self.config['learning_rate']}
         ]
 
-        self.optimizer = torch.optim.Adam( self.model.parameters(), self.config['learning_rate'])
+        self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
         self.epochs = 0
 
