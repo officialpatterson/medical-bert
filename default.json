@@ -1,6 +1,6 @@
 {
   "data_dir" : "gs://storage.andrewrpatterson.com/debug",
-  "output_dir" : "~/runs",
+  "output_dir" : "/home/apatterson/",
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
   "num_train_examples": 2996,
