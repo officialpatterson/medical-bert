@@ -52,6 +52,7 @@ class BertGeneralClassifier:
 
         for _ in trange(self.epochs, int(self.config['epochs']), desc="Epoch"):
             epoch_loss = 0
+            tr_loss = 0
             num_steps = 0
             batche = []
             epoch_loss = []
@@ -72,6 +73,8 @@ class BertGeneralClassifier:
 
                     loss.backward()
 
+                    tr_loss += loss.item()
+
                     if (step + 1) % self.config['gradient_accumulation_steps'] == 0:
                         batch_losses.append(mean(batche))
                         epoch_loss.append(mean(batche))
@@ -79,6 +82,7 @@ class BertGeneralClassifier:
                         self.optimizer.step()
                         self.optimizer.zero_grad()
 
+            print(tr_loss)
             print("EPOCH LOSS: {}\n".format(mean(epoch_loss)))
             epoch_loss = []
             with open(os.path.join(self.config['output_dir'], self.config['experiment_name'], "batch_loss.csv"), "a") as f:
