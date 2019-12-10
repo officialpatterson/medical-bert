@@ -170,6 +170,7 @@ class DataReader:
         df['text'] = df['text'].str.lower()
 
         df = df.sample(frac=1)
+        df[self.config['target']] = df[self.config['target']].astype('category')
 
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
 
