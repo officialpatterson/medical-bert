@@ -3,7 +3,7 @@
 import logging, os, torch
 from pathlib import Path
 import pandas as pd
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import TensorDataset, DataLoader, RandomSampler
 from tqdm import tqdm
 
 
@@ -202,7 +202,7 @@ class DataReader:
         actual_batch_size = self.config['train_batch_size'] // self.config['gradient_accumulation_steps']
 
         logging.info("Using gradient accumulation - physical batch size is {}".format(actual_batch_size))
-        self.train = DataLoader(data, shuffle=True, batch_size=actual_batch_size)
+        self.train = DataLoader(RandomSampler(data), shuffle=True, batch_size=actual_batch_size)
         return self.train
 
     def get_eval(self):
