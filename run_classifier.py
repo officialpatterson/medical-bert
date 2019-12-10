@@ -101,11 +101,11 @@ class DataProcessor(object):
     def _read_csv(cls, input_file):
         """Reads a comma separated value file."""
         file = pd.read_csv(input_file)
-        lines = zip(file.ID, file.TEXT, file.Label)
+        lines = zip(file.text, file.sentiment)
         return lines
 
 
-class readmissionProcessor(DataProcessor):
+class ReadmissionProcessor(DataProcessor):
     def get_train_examples(self, data_dir):
         logger.info("LOOKING AT {}".format(os.path.join(data_dir, "train.csv")))
         return self._create_examples(
@@ -113,7 +113,7 @@ class readmissionProcessor(DataProcessor):
 
     def get_dev_examples(self, data_dir):
         return self._create_examples(
-            self._read_csv(os.path.join(data_dir, "val.csv")), "val")
+            self._read_csv(os.path.join(data_dir, "test.csv")), "val")
 
     def get_test_examples(self, data_dir):
         return self._create_examples(
@@ -471,6 +471,7 @@ def main():
         "cola": ColaProcessor,
         "mnli": MnliProcessor,
         "mrpc": MrpcProcessor,
+        "readmission": ReadmissionProcessor,
     }
 
     if args.local_rank == -1 or args.no_cuda:
