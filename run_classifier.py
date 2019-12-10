@@ -127,8 +127,8 @@ class ReadmissionProcessor(DataProcessor):
         examples = []
         for (i, line) in enumerate(lines):
             guid = "%s-%s" % (set_type, i)
-            text_a = line[1]
-            label = str(int(line[2]))
+            text_a = line[0]
+            label = str(int(line[1]))
             examples.append(
                 InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
         return examples
