@@ -168,6 +168,9 @@ class DataReader:
         df['text'] = df['text'].str.replace(r'\t', ' ', regex=True)
         df['text'] = df['text'].str.replace(r'\n', ' ', regex=True)
         df['text'] = df['text'].str.lower()
+
+        df = df.sample(frac=1)
+
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
 
             # tokenize the text
