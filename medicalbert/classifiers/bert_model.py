@@ -11,7 +11,7 @@ class BertForSequenceClassification(BertPreTrainedModel):
         self.bert = BertModel(config)
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.classifier = nn.Linear(config.hidden_size, self.config.num_labels)
-
+        self.head = nn.Softmax(dim=1)
         self.init_weights()
 
     def forward(self, input_ids=None, attention_mask=None, token_type_ids=None,
@@ -28,7 +28,7 @@ class BertForSequenceClassification(BertPreTrainedModel):
 
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
-
+        logits = self.head(logits)
         outputs = (logits,) + outputs[2:]  # add hidden states and attention if they are here
 
         if labels is not None:
