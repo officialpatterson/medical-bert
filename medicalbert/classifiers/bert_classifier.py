@@ -51,9 +51,7 @@ class BertGeneralClassifier:
         batch_losses = []
 
         for _ in trange(self.epochs, int(self.config['epochs']), desc="Epoch"):
-            epoch_loss = 0
             tr_loss = 0
-            num_steps = 0
             batche = []
             epoch_loss = []
             with tqdm(datareader.get_train(), desc="Iteration") as t:
@@ -62,6 +60,10 @@ class BertGeneralClassifier:
                     batch = tuple(t.to(device) for t in batch)
                     input_ids, input_mask, segment_ids, label_ids = batch
 
+                    print("input_id_shape: {}".format(input_ids.shape))
+                    print("input_mask_shape: {}".format(input_mask.shape))
+                    print("segment_ids.shape".format(segment_ids.shape))
+                    print("label_ids.shape".format(label_ids.shape))
                     outputs = self.model(input_ids, segment_ids, input_mask, label_ids)
 
                     loss = outputs[0]
