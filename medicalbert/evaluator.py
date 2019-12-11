@@ -43,14 +43,15 @@ class Evaluator:
         all_losses = []
         for step, batch in enumerate(tqdm(data, desc="evaluating")):
             batch = tuple(t.to(device) for t in batch)
-            labels, features = batch
+            input_ids, input_mask, segment_ids, label_ids = batch
 
             with torch.no_grad():
-                loss, logits = self.model(features, labels=labels)
+                tmp_eval_loss = self.model(input_ids, segment_ids, input_mask, label_ids)
+                logits = self.model(input_ids, segment_ids, input_mask)
 
-            all_losses.append(loss.item())
+            all_losses.append(tmp_eval_loss.mean().item())
             logits = logits.detach().cpu().numpy()
-            label_ids = labels.detach().cpu().numpy()
+            labels = label_ids.detach().cpu().numpy()
 
             if all_logits is not None:
                 all_logits = np.concatenate((all_logits, logits))
