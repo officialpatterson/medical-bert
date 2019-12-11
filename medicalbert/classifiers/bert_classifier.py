@@ -33,14 +33,9 @@ class BertGeneralClassifier:
                         self.config['gradient_accumulation_steps']) * self.config['epochs']
 
         logging.info("{} optimisation steps".format(num_steps))
-        optimizer_grouped_parameters = [
-            {'params': self.model.parameters(), 'lr': self.config['learning_rate']}
-        ]
 
-        self.optimizer = BertAdam(optimizer_grouped_parameters,
-                             lr=self.config['learning_rate'],
-                             warmup=self.config['warmup_proportion'],
-                             t_total=num_steps)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
+
 
         self.epochs = 0
 
