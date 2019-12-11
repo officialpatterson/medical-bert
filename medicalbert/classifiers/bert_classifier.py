@@ -61,7 +61,7 @@ class BertGeneralClassifier:
                     batch = tuple(t.to(device) for t in batch)
                     input_ids, input_mask, segment_ids, label_ids = batch
 
-                    loss = self.model(input_ids=input_ids, labels=label_ids)
+                    loss = self.model(input_ids=input_ids, labels=label_ids)[0]
 
                     # Statistics
                     batche.append(loss.item())
