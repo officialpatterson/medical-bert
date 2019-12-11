@@ -26,7 +26,7 @@ def save(summary, logits, labels, path, name):
 class BertGeneralClassifier:
     def __init__(self, config):
         self.config = config
-        self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
+        self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'], num_labels=2)
 
         bs = self.config['train_batch_size'] //self.config['gradient_accumulation_steps']
         num_steps = int(self.config['num_train_examples'] / bs /
