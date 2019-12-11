@@ -24,7 +24,7 @@ def _truncate_seq_pair(tokens_a, tokens_b, max_length):
             tokens_b.pop()
 
 
-def convert_example_to_feature(example, max_seq_length, tokenizer):
+def convert_example_to_feature(example, label, max_seq_length, tokenizer):
     """Loads a data file into a list of `InputBatch`s."""
 
     # tokenize the first text.
@@ -96,7 +96,7 @@ def convert_example_to_feature(example, max_seq_length, tokenizer):
     assert len(input_mask) == max_seq_length
     assert len(segment_ids) == max_seq_length
 
-    return input_ids, input_mask, segment_ids
+    return InputFeatures(input_ids, input_mask, segment_ids, label)
 
 
 class InputFeatures(object):
@@ -155,21 +155,22 @@ class DataReader:
         logging.info(df.shape)
 
         input_features = []
-        input_labels = []
 
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
 
             text = row['text']
-            input_labels.append(row[self.config['target']])
+            lbl = row[self.config['target']]
 
             input_example = InputExample(None, text, None, self.config['target'])
-            feature = convert_example_to_feature(input_example, 512, self.tokenizer)
+            feature = convert_example_to_feature(input_example, lbl, 512, self.tokenizer)
             input_features.append(feature)
 
-        all_labels = torch.tensor([f for f in input_labels], dtype=torch.long)
-        all_features = torch.tensor([f for f in input_features], dtype=torch.long)
+        all_input_ids = torch.tensor([f.input_ids for f in input_features], dtype=torch.long)
+        all_input_mask = torch.tensor([f.input_mask for f in input_features], dtype=torch.long)
+        all_segment_ids = torch.tensor([f.segment_ids for f in input_features], dtype=torch.long)
+        all_label_ids = torch.tensor([f.label_id for f in input_features], dtype=torch.long)
 
-        td = TensorDataset(all_labels, all_features)
+        td =  TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
 
         if not os.path.exists(path):
             os.makedirs(path)
