@@ -59,8 +59,8 @@ class Evaluator:
                 all_logits = logits
                 all_labels = label_ids
 
-        roc = roc_auc_score(all_labels, all_logits[:,0])
-        precision = average_precision_score(all_labels, all_logits[:,0])
+        roc = roc_auc_score(all_labels, all_logits[:,1])
+        precision = average_precision_score(all_labels, all_logits[:,1])
         accuracy = accuracy_score(all_labels, np.argmax(all_logits, axis=1))
 
         summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}

@@ -3,8 +3,9 @@ import logging, os, torch
 
 import pandas as pd
 from tqdm import trange, tqdm
-from classifiers.bert_model import BertForSequenceClassification
-from pytorch_pretrained_bert import BertAdam
+from pytorch_pretrained_bert.tokenization import BertTokenizer
+from pytorch_pretrained_bert.modeling import BertForSequenceClassification
+from pytorch_pretrained_bert.optimization import BertAdam
 from statistics import mean
 
 
@@ -60,7 +61,7 @@ class BertGeneralClassifier:
                     batch = tuple(t.to(device) for t in batch)
                     input_ids, input_mask, segment_ids, label_ids = batch
 
-                    outputs = self.model(input_ids, segment_ids, input_mask, labels=label_ids)
+                    outputs = self.model(input_ids, segment_ids, input_mask, label_ids)
 
                     loss = outputs[0]
 
