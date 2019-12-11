@@ -4,7 +4,7 @@ import logging, os, torch
 import pandas as pd
 from tqdm import trange, tqdm
 from pytorch_pretrained_bert.tokenization import BertTokenizer
-from classifiers.model import BertForSequenceClassification
+from classifiers.bert_model import BertForSequenceClassification
 from pytorch_pretrained_bert.optimization import BertAdam
 from statistics import mean
 
