@@ -161,7 +161,9 @@ class DataReader:
 
             text = row['text']
             input_labels.append(row[self.config['target']])
-            feature = convert_example_to_feature(text, 512, self.tokenizer)
+
+            input_example = InputExample(None, text, None, self.config['target'])
+            feature = convert_example_to_feature(input_example, 512, self.tokenizer)
             input_features.append(feature)
 
         all_labels = torch.tensor([f for f in input_labels], dtype=torch.long)
