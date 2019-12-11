@@ -60,9 +60,9 @@ class BertGeneralClassifier:
                 for step, batch in enumerate(t):
 
                     batch = tuple(t.to(device) for t in batch)
-                    labels, features = batch
+                    input_ids, input_mask, segment_ids, label_ids = batch
 
-                    outputs = self.model(features, labels=labels)
+                    outputs = self.model(input_ids, segment_ids, input_mask, label_ids, num_labels=2)
 
                     loss = outputs[0]
 

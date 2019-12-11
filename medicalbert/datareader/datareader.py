@@ -7,42 +7,6 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler
 from tqdm import tqdm
 
 
-def convert_to_features(tokensA, tokensB, tokenizer):
-
-    if tokensB:
-        _truncate_seq_pair(tokensA, tokensB, 512 - 3)
-    else:
-        seq_len = len(tokensA)
-        # Account for [CLS] and [SEP] with "- 2"
-        if len(tokensA) > 512 - 2:
-            tokensA = tokensA[:(512 - 2)]
-
-    tokens = ["[CLS]"] + tokensA + ["[SEP]"]
-    segment_ids = [0] * len(tokens)
-
-    if tokensB:
-        tokens += tokensB + ["[SEP]"]
-        segment_ids += [1] * (len(tokensB) + 1)
-
-    input_ids = tokenizer.convert_tokens_to_ids(tokens)
-
-    # The mask has 1 for real tokens and 0 for padding tokens. Only real
-    # tokens are attended to.
-    input_mask = [1] * len(input_ids)
-
-    # Zero-pad up to the sequence length.
-    padding = [0] * (512 - len(input_ids))
-    input_ids += padding
-    input_mask += padding
-    segment_ids += padding
-
-    assert len(input_ids) == 512
-    assert len(input_mask) == 512
-    assert len(segment_ids) == 512
-
-    return input_ids, input_mask, segment_ids
-
-
 def _truncate_seq_pair(tokens_a, tokens_b, max_length):
     """Truncates a sequence pair in place to the maximum length."""
 
@@ -59,85 +23,112 @@ def _truncate_seq_pair(tokens_a, tokens_b, max_length):
         else:
             tokens_b.pop()
 
-class PairReader:
 
-    def __init__(self, config, tokenizer):
-        self.tokenizer = tokenizer
-        self.max_sequence_length = config['max_sequence_length']
-        self.config = config
-        self.train = None
-        self.eval = None
+def convert_example_to_feature(example, max_seq_length, tokenizer):
+    """Loads a data file into a list of `InputBatch`s."""
 
-    def get_dataset(self, dataset):
-        path = os.path.join(self.config['output_dir'], self.config['experiment_name'])
-        saved_file = os.path.join(path, Path(dataset).stem + ".pt")
+    # tokenize the first text.
+    tokens_a = tokenizer.tokenize(example.text_a)
 
-        logging.info(saved_file)
-        if os.path.isfile(saved_file):
-            logging.info("Using Cached dataset from {} - saves time!".format(saved_file))
-            return torch.load(saved_file)
+    # if its a sentence-pair task, tokenize the second
+    tokens_b = None
+    if example.text_b:
+        tokens_b = tokenizer.tokenize(example.text_b)
 
-        input_ids_list = []
-        masks_list = []
-        segments = []
-        labels_list = []
-        logging.info("Building fresh dataset...")
+    if tokens_b:
+        # Modifies `tokens_a` and `tokens_b` in place so that the total
+        # length is less than the specified length.
+        # Account for [CLS], [SEP], [SEP] with "- 3"
+        _truncate_seq_pair(tokens_a, tokens_b, max_seq_length - 3)
+    else:
+        # Account for [CLS] and [SEP] with "- 2"
+        if len(tokens_a) > max_seq_length - 2:
+            tokens_a = tokens_a[0:(max_seq_length - 2)]
 
-        df = pd.read_csv(os.path.join(self.config['data_dir'], dataset), engine='python')
+    # The convention in BERT is:
+    # (a) For sequence pairs:
+    #  tokens:   [CLS] is this jack ##son ##ville ? [SEP] no it is not . [SEP]
+    #  type_ids: 0   0  0    0    0     0       0 0    1  1  1  1   1 1
+    # (b) For single sequences:
+    #  tokens:   [CLS] the dog is hairy . [SEP]
+    #  type_ids: 0   0   0   0  0     0 0
+    #
+    # Where "type_ids" are used to indicate whether this is the first
+    # sequence or the second sequence. The embedding vectors for `type=0` and
+    # `type=1` were learned during pre-training and are added to the wordpiece
+    # embedding vector (and position vector). This is not *strictly* necessary
+    # since the [SEP] token unambigiously separates the sequences, but it makes
+    # it easier for the model to learn the concept of sequences.
+    #
+    # For classification tasks, the first vector (corresponding to [CLS]) is
+    # used as as the "sentence vector". Note that this only makes sense because
+    # the entire model is fine-tuned.
+    tokens = []
+    segment_ids = []
+    tokens.append("[CLS]")
+    segment_ids.append(0)
+    for token in tokens_a:
+        tokens.append(token)
+        segment_ids.append(0)
+    tokens.append("[SEP]")
+    segment_ids.append(0)
 
-        logging.info(df.shape)
-        # Some light preprocessing
-        df['text_A'] = df['text_A'].str.replace(r'\t', ' ', regex=True)
-        df['text_A'] = df['text_A'].str.replace(r'\n', ' ', regex=True)
-        df['text_A'] = df['text_A'].str.lower()
+    if tokens_b:
+        for token in tokens_b:
+            tokens.append(token)
+            segment_ids.append(1)
+        tokens.append("[SEP]")
+        segment_ids.append(1)
 
-        df['text_B'] = df['text_B'].str.replace(r'\t', ' ', regex=True)
-        df['text_B'] = df['text_B'].str.replace(r'\n', ' ', regex=True)
-        df['text_B'] = df['text_B'].str.lower()
-        for _, row in tqdm(df.iterrows(), total=df.shape[0]):
+    input_ids = tokenizer.convert_tokens_to_ids(tokens)
 
-            # tokenize the text
-            tokensA = self.tokenizer.tokenize(row['text_A'])
-            tokensB = self.tokenizer.tokenize(row['text_B'])
+    # The mask has 1 for real tokens and 0 for padding tokens. Only real
+    # tokens are attended to.
+    input_mask = [1] * len(input_ids)
 
-            # convert to features
-            ids, mask, seg_ids = convert_to_features(tokensA, tokensB, self.tokenizer)
-            input_ids_list.append(ids)
-            masks_list.append(mask)
-            segments.append(seg_ids)
-            labels_list.append(row[self.config['target']])
+    # Zero-pad up to the sequence length.
+    while len(input_ids) < max_seq_length:
+        input_ids.append(0)
+        input_mask.append(0)
+        segment_ids.append(0)
 
-        all_labels = torch.tensor([f for f in labels_list], dtype=torch.long)
-        all_input_ids = torch.tensor([f for f in input_ids_list], dtype=torch.long)
-        all_masks = torch.tensor([f for f in masks_list], dtype=torch.long)
-        all_segments = torch.tensor([f for f in segments], dtype=torch.long)
-        td = TensorDataset(all_labels, all_input_ids, all_masks, all_segments)
+    assert len(input_ids) == max_seq_length
+    assert len(input_mask) == max_seq_length
+    assert len(segment_ids) == max_seq_length
 
-        if not os.path.exists(path):
-            os.makedirs(path)
+    return input_ids, input_mask, segment_ids
 
-        logging.info("saving dataset at {}".format(saved_file))
-        torch.save(td, saved_file)
-        return td
 
-    def get_train(self):
-        if self.train:
-            return self.train
+class InputFeatures(object):
+    """A single set of features of data."""
 
-        data = self.get_dataset(self.config['training_data'])
-        actual_batch_size = self.config['train_batch_size'] // self.config['gradient_accumulation_steps']
+    def __init__(self, input_ids, input_mask, segment_ids, label_id):
+        self.input_ids = input_ids
+        self.input_mask = input_mask
+        self.segment_ids = segment_ids
+        self.label_id = label_id
 
-        logging.info("Using gradient accumulation - physical batch size is {}".format(actual_batch_size))
-        self.train = DataLoader(data, shuffle=True, batch_size=actual_batch_size)
-        return self.train
 
-    def get_eval(self):
-        if self.eval:
-            return self.eval
+class InputExample(object):
+    """A single training/test example for simple sequence classification."""
 
-        data = self.get_dataset(self.config['validation_data'])
-        self.eval = DataLoader(data, shuffle=False, batch_size=self.config['eval_batch_size'])
-        return self.eval
+    def __init__(self, guid, text_a, text_b=None, label=None):
+        """Constructs a InputExample.
+
+        Args:
+            guid: Unique id for the example.
+            text_a: string. The untokenized text of the first sequence. For single
+            sequence tasks, only this sequence must be specified.
+            text_b: (Optional) string. The untokenized text of the second sequence.
+            Only must be specified for sequence pair tasks.
+            label: (Optional) string. The label of the example. This should be
+            specified for train and dev examples, but not for test examples.
+        """
+        self.guid = guid
+        self.text_a = text_a
+        self.text_b = text_b
+        self.label = label
+
 
 class DataReader:
 
@@ -157,30 +148,26 @@ class DataReader:
             logging.info("Using Cached dataset from {} - saves time!".format(saved_file))
             return torch.load(saved_file)
 
-        feature_list = []
-        labels_list = []
         logging.info("Building fresh dataset...")
 
         df = pd.read_csv(os.path.join(self.config['data_dir'], dataset))
 
         logging.info(df.shape)
 
-        df = df.sample(frac=1)
+        input_features = []
+        input_labels = []
 
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
 
-            # tokenize the text
-            tokens = self.tokenizer.tokenize(row['text'])
+            text = row['text']
+            input_labels.append(row[self.config['target']])
+            feature = convert_example_to_feature(text, 512, self.tokenizer)
+            input_features.append(feature)
 
-            # convert to features
-            ids, mask, seg_ids = convert_to_features(tokens, None, self.tokenizer)
-            feature_list.append(ids)
-            labels_list.append(row[self.config['target']])
+        all_labels = torch.tensor([f for f in input_labels], dtype=torch.long)
+        all_features = torch.tensor([f for f in input_features], dtype=torch.long)
 
-        all_labels = torch.tensor([f for f in labels_list], dtype=torch.long)
-        all_texts = torch.tensor([f for f in feature_list], dtype=torch.long)
-
-        td = TensorDataset(all_labels, all_texts)
+        td = TensorDataset(all_labels, all_features)
 
         if not os.path.exists(path):
             os.makedirs(path)
