@@ -62,8 +62,8 @@ class BertGeneralClassifier:
 
                     print("input_id_shape: {}".format(input_ids.shape))
                     print("input_mask_shape: {}".format(input_mask.shape))
-                    print("segment_ids.shape".format(segment_ids.shape))
-                    print("label_ids.shape".format(label_ids.shape))
+                    print("segment_ids.shape: {}".format(segment_ids.shape))
+                    print("label_ids.shape: {}".format(label_ids.shape))
                     outputs = self.model(input_ids, segment_ids, input_mask, label_ids)
 
                     loss = outputs[0]
