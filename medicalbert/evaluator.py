@@ -48,7 +48,7 @@ class Evaluator:
             with torch.no_grad():
                 out = self.model(input_ids, segment_ids, input_mask, label_ids)
                 tmp_eval_loss = out[0]
-                logit = out[1]
+                logits = out[1]
 
             all_losses.append(tmp_eval_loss.mean().item())
             logits = logits.detach().cpu().numpy()
