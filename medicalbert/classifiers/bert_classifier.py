@@ -60,10 +60,6 @@ class BertGeneralClassifier:
                     batch = tuple(t.to(device) for t in batch)
                     input_ids, input_mask, segment_ids, label_ids = batch
 
-                    print("input_id_shape: {}".format(input_ids.shape))
-                    print("input_mask_shape: {}".format(input_mask.shape))
-                    print("segment_ids.shape: {}".format(segment_ids.shape))
-                    print("label_ids.shape: {}".format(label_ids.shape))
                     outputs = self.model(input_ids, segment_ids, input_mask, labels=label_ids)
 
                     loss = outputs[0]
