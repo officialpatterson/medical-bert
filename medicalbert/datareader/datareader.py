@@ -170,7 +170,7 @@ class DataReader:
         all_segment_ids = torch.tensor([f.segment_ids for f in input_features], dtype=torch.long)
         all_label_ids = torch.tensor([f.label_id for f in input_features], dtype=torch.long)
 
-        td =  TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
+        td = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
 
         if not os.path.exists(path):
             os.makedirs(path)
