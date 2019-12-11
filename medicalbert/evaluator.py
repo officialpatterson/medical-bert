@@ -58,7 +58,7 @@ class Evaluator:
                 all_labels = np.concatenate([all_labels, labels])
             else:
                 all_logits = logits
-                all_labels = label_ids
+                all_labels = labels
 
         roc = roc_auc_score(all_labels, all_logits[:,1])
         precision = average_precision_score(all_labels, all_logits[:,1])
