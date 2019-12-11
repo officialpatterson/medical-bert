@@ -55,7 +55,7 @@ class Evaluator:
 
             if all_logits is not None:
                 all_logits = np.concatenate((all_logits, logits))
-                all_labels = np.concatenate([all_labels, label_ids])
+                all_labels = np.concatenate([all_labels, labels])
             else:
                 all_logits = logits
                 all_labels = label_ids
