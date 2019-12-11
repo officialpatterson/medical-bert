@@ -164,13 +164,8 @@ class DataReader:
         df = pd.read_csv(os.path.join(self.config['data_dir'], dataset))
 
         logging.info(df.shape)
-        # Some light preprocessing
-        df['text'] = df['text'].str.replace(r'\t', ' ', regex=True)
-        df['text'] = df['text'].str.replace(r'\n', ' ', regex=True)
-        df['text'] = df['text'].str.lower()
 
         df = df.sample(frac=1)
-        df[self.config['target']] = df[self.config['target']].astype('category')
 
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
 
@@ -202,7 +197,7 @@ class DataReader:
         actual_batch_size = self.config['train_batch_size'] // self.config['gradient_accumulation_steps']
 
         logging.info("Using gradient accumulation - physical batch size is {}".format(actual_batch_size))
-        self.train = DataLoader(RandomSampler(data), shuffle=True, batch_size=actual_batch_size)
+        self.train = DataLoader(data, sampler=RandomSampler(data), batch_size=actual_batch_size)
         return self.train
 
     def get_eval(self):
