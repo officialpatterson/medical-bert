@@ -1,5 +1,5 @@
 # Currently provides two approaches for data loading.
-from datareader.datareader import DataReader, PairReader
+from datareader.datareader import DataReader
 
 
 class DataReaderFactory:
