@@ -3,9 +3,7 @@ import logging, os, torch
 
 import pandas as pd
 from tqdm import trange, tqdm
-from pytorch_pretrained_bert.tokenization import BertTokenizer
 from classifiers.bert_model import BertForSequenceClassification
-from pytorch_pretrained_bert.optimization import BertAdam
 from statistics import mean
 
 
@@ -28,14 +26,7 @@ class BertGeneralClassifier:
         self.config = config
         self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
 
-        bs = self.config['train_batch_size'] //self.config['gradient_accumulation_steps']
-        num_steps = int(self.config['num_train_examples'] / bs /
-                        self.config['gradient_accumulation_steps']) * self.config['epochs']
-
-        logging.info("{} optimisation steps".format(num_steps))
-
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
-
 
         self.epochs = 0
 
@@ -49,7 +40,6 @@ class BertGeneralClassifier:
         for _ in trange(self.epochs, int(self.config['epochs']), desc="Epoch"):
             tr_loss = 0
             batche = []
-            epoch_loss = []
             with tqdm(datareader.get_train(), desc="Iteration") as t:
                 for step, batch in enumerate(t):
 
@@ -69,14 +59,11 @@ class BertGeneralClassifier:
 
                     if (step + 1) % self.config['gradient_accumulation_steps'] == 0:
                         batch_losses.append(mean(batche))
-                        epoch_loss.append(mean(batche))
                         # Update the model gradients
                         self.optimizer.step()
                         self.optimizer.zero_grad()
 
             print(tr_loss)
-            print("EPOCH LOSS: {}\n".format(mean(epoch_loss)))
-            epoch_loss = []
             with open(os.path.join(self.config['output_dir'], self.config['experiment_name'], "batch_loss.csv"), "a") as f:
                 for loss in batch_losses:
                     f.write("{}\n".format(loss))
