@@ -1,26 +1,9 @@
-import json
 import logging, os, torch
 
-import pandas as pd
 from tqdm import trange, tqdm
 from classifiers.bert_model import BertForSequenceClassification
-from pytorch_pretrained_bert import BertAdam
 from statistics import mean
 
-
-def save(summary, logits, labels, path, name):
-    path = os.path.join(path, name)
-    if not os.path.exists(path):
-        os.makedirs(path)
-    json.dump(summary, open(os.path.join(path, "summary.json"), 'w'))
-
-    first_logit = pd.Series(logits[:, 0])
-    second_logit = pd.Series(logits[:, 1])
-    labels = labels
-
-    frame = {'0': first_logit, '1': second_logit, 'label': labels}
-
-    pd.DataFrame(frame).to_csv(os.path.join(path, "output.csv"))
 
 class BertRandomClassifier:
     def __init__(self, config):
@@ -28,15 +11,6 @@ class BertRandomClassifier:
         self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
 
         self.model =  BertForSequenceClassification(self.model.config)
-
-        bs = self.config['train_batch_size'] //self.config['gradient_accumulation_steps']
-        num_steps = int(self.config['num_train_examples'] / bs /
-                        self.config['gradient_accumulation_steps']) * self.config['epochs']
-
-        logging.info("{} optimisation steps".format(num_steps))
-        optimizer_grouped_parameters = [
-            {'params': self.model.parameters(), 'lr': self.config['learning_rate']}
-        ]
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
@@ -50,19 +24,15 @@ class BertRandomClassifier:
         batch_losses = []
 
         for _ in trange(self.epochs, int(self.config['epochs']), desc="Epoch"):
-            epoch_loss = 0
-            num_steps = 0
+            tr_loss = 0
             batche = []
-            epoch_loss = []
             with tqdm(datareader.get_train(), desc="Iteration") as t:
                 for step, batch in enumerate(t):
 
                     batch = tuple(t.to(device) for t in batch)
-                    labels, features = batch
+                    input_ids, input_mask, segment_ids, label_ids = batch
 
-                    outputs = self.model(features, labels=labels)
-
-                    loss = outputs[0]
+                    loss = self.model(input_ids=input_ids, token_type_ids=segment_ids, attention_mask=input_mask, labels=label_ids)[0]
 
                     # Statistics
                     batche.append(loss.item())
@@ -71,15 +41,15 @@ class BertRandomClassifier:
 
                     loss.backward()
 
+                    tr_loss += loss.item()
+
                     if (step + 1) % self.config['gradient_accumulation_steps'] == 0:
                         batch_losses.append(mean(batche))
-                        epoch_loss.append(mean(batche))
                         # Update the model gradients
                         self.optimizer.step()
                         self.optimizer.zero_grad()
 
-            print("EPOCH LOSS: {}\n".format(mean(epoch_loss)))
-            epoch_loss = []
+            print(tr_loss)
             with open(os.path.join(self.config['output_dir'], self.config['experiment_name'], "batch_loss.csv"), "a") as f:
                 for loss in batch_losses:
                     f.write("{}\n".format(loss))
@@ -93,7 +63,6 @@ class BertRandomClassifier:
     def set_eval_mode(self, device):
         self.model.eval()
         self.model.to(device)
-
 
     def save(self):
         checkpoint = {

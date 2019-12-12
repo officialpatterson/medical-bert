@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     parser.add_option("--testoutput", help="specify the output location")
 
-    parser.add_option("--ratio", help="specify the output location", type="float")
+    parser.add_option("--ratio", help="specify the proportion to keep for testing", type="float")
 
     (options, args) = parser.parse_args()
 
