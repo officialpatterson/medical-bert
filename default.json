@@ -1,5 +1,5 @@
 {
-  "data_dir" : "gs://storage.andrewrpatterson.com/debug",
+  "data_dir" : "gs://storage.andrewrpatterson.com/readm_30d",
   "output_dir" : "/home/apatterson/",
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
@@ -14,9 +14,9 @@
   "experiment_name": "default",
   "epochs": 5,
   "train_batch_size": 16,
-  "gradient_accumulation_steps": 4,
+  "gradient_accumulation_steps": 16,
   "eval_batch_size": 16,
-  "learning_rate": 0.00001,
+  "learning_rate": 0.00005,
   "target": "label",
   "datareader": "one-doc"
 }
