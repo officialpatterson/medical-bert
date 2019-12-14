@@ -39,7 +39,7 @@ class FastText(nn.Module):
             print(s.shape)
             t = labels.view(-1)
             print(t.shape)
-            loss = loss_fct(s, t)
+            loss = loss_fct(logits, labels)
 
             outputs = (loss,) + logits
         return outputs
