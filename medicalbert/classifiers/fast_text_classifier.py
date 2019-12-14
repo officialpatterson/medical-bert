@@ -33,6 +33,7 @@ class FastTextClassifier:
                     loss = self.model(input_ids)[0]
 
                     # Statistics
+                    print(loss)
                     batche.append(loss.item())
 
                     loss = loss / self.config['gradient_accumulation_steps']
