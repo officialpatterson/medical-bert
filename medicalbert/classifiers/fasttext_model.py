@@ -30,6 +30,8 @@ class FastText(nn.Module):
 
         logits = self.softmax(z)
         outputs = (logits,)
+
+        print(logits.shape)
         if labels is not None:
 
             loss_fct = CrossEntropyLoss()
