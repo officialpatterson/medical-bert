@@ -5,7 +5,7 @@ from classifiers.fasttext_model import FastText
 from statistics import mean
 
 
-class BertGeneralClassifier:
+class FastTextClassifier:
     def __init__(self, config):
         self.config = config
         self.model = FastText(config)
