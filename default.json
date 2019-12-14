@@ -1,6 +1,6 @@
 {
-  "data_dir" : "gs://storage.andrewrpatterson.com/readm_30d",
-  "output_dir" : "/home/apatterson/",
+  "data_dir" : "gs://storage.andrewrpatterson.com/aclImdb/",
+  "output_dir" : "~/",
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
   "num_train_examples": 2996,
@@ -18,5 +18,7 @@
   "eval_batch_size": 16,
   "learning_rate": 0.00005,
   "target": "label",
-  "datareader": "one-doc"
+  "datareader": "one-doc",
+  "vocab_size": 3500,
+  "embed_size": 100
 }

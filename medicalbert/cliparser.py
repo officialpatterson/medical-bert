@@ -1,6 +1,7 @@
 import argparse
 
-
+#All the parameters that we can set.
+# NB: not all params are used by every classifier.
 def setup_parser():
     parser = argparse.ArgumentParser()
 
@@ -88,4 +89,12 @@ def setup_parser():
                         default=None,
                         type=str,
                         help="approach to reading the data from files.")
+    parser.add_argument("--vocab_size",
+                        default=None,
+                        type=int,
+                        help="Size of vocabulary.")
+    parser.add_argument("--embed_size",
+                        default=None,
+                        type=int,
+                        help="Size of vocabulary.")
     return parser.parse_args()

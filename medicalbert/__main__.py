@@ -14,6 +14,7 @@ def set_random_seeds(seed):
     np.random.seed(seed)
     torch.manual_seed(seed)
 
+
 if __name__ == "__main__":
 
     # Load config
