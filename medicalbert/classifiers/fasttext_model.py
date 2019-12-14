@@ -38,7 +38,7 @@ class FastText(nn.Module):
                 loss_fct = CrossEntropyLoss()
                 loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
 
-        outputs = (loss,) + logits
+            outputs = (loss,) + logits
         return outputs
 
 
