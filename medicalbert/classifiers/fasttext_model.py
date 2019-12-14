@@ -31,13 +31,9 @@ class FastText(nn.Module):
         logits = self.softmax(z)
         outputs = (logits,)
         if labels is not None:
-            if self.num_labels == 1:
-                #  We are doing regression
-                loss_fct = MSELoss()
-                loss = loss_fct(logits.view(-1), labels.view(-1))
-            else:
-                loss_fct = CrossEntropyLoss()
-                loss = loss_fct(logits.view(-1, 2), labels.view(-1))
+
+            loss_fct = CrossEntropyLoss()
+            loss = loss_fct(logits.view(-1, 2), labels.view(-1))
 
             outputs = (loss,) + logits
         return outputs
