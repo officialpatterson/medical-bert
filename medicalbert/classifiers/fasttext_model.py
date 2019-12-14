@@ -24,7 +24,8 @@ class FastText(nn.Module):
         self.softmax = nn.Softmax()
 
     def forward(self, x, labels=None):
-        embedded_sent = self.embeddings(x).permute(1,0,2)
+        embedded_sent = self.embeddings(x)
+        
         h = self.fc1(embedded_sent.mean(1))
         z = self.fc2(h)
 
