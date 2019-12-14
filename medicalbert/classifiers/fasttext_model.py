@@ -25,22 +25,16 @@ class FastText(nn.Module):
 
     def forward(self, x, labels=None):
         embedded_sent = self.embeddings(x)
-        
+
         h = self.fc1(embedded_sent.mean(1))
         z = self.fc2(h)
 
         logits = self.softmax(z)
         outputs = (logits,)
 
-        print(logits.shape)
-        print(labels.shape)
-        print(labels)
         if labels is not None:
-
             loss_fct = CrossEntropyLoss()
-            s = logits.view(-1, 2)
-            t = labels.view(-1)
-            loss = loss_fct(logits, labels)
+            loss = loss_fct(logits.view(-1, 2), labels.view(-1))
 
             outputs = (loss,) + logits
         return outputs
