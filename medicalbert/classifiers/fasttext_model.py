@@ -29,6 +29,7 @@ class FastText(nn.Module):
         z = self.fc2(h)
 
         logits = self.softmax(z)
+        outputs = (logits,)
         if labels is not None:
             if self.num_labels == 1:
                 #  We are doing regression
