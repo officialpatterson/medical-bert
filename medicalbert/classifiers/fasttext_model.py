@@ -32,13 +32,13 @@ class FastText(nn.Module):
         outputs = (logits,)
 
         print(logits.shape)
+        print(labels.shape)
+        print(labels)
         if labels is not None:
 
             loss_fct = CrossEntropyLoss()
             s = logits.view(-1, 2)
-            print(s.shape)
             t = labels.view(-1)
-            print(t.shape)
             loss = loss_fct(logits, labels)
 
             outputs = (loss,) + logits
