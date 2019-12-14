@@ -30,11 +30,9 @@ class FastTextClassifier:
                     batch = tuple(t.to(device) for t in batch)
                     input_ids, input_mask, segment_ids, label_ids = batch
 
-                    print(input_ids.shape)
                     loss = self.model(input_ids, labels=label_ids)[0]
 
                     # Statistics
-                    print(loss)
                     batche.append(loss.item())
 
                     loss = loss / self.config['gradient_accumulation_steps']
