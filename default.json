@@ -1,5 +1,5 @@
 {
-  "data_dir" : "gs://storage.andrewrpatterson.com/aclImdb/small",
+  "data_dir" : "gs://storage.andrewrpatterson.com/readm_30d",
   "output_dir" : "/home/apatterson/",
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
