@@ -13,8 +13,8 @@ class FastText(nn.Module):
 
         if word_embeddings:
             self.embeddings.weight = nn.Parameter(word_embeddings, requires_grad=False)
-        # Hidden Layer
 
+        # Hidden Layer
         self.fc1 = nn.Linear(self.config['embed_size'],  10)
 
         # Output Layer
@@ -24,7 +24,6 @@ class FastText(nn.Module):
         self.softmax = nn.Softmax()
 
     def forward(self, x, labels=None):
-
         embedded_sent = self.embeddings(x)
 
         h = self.fc1(embedded_sent.mean(1))
