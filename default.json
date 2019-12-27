@@ -17,7 +17,7 @@
   "gradient_accumulation_steps": 16,
   "eval_batch_size": 16,
   "learning_rate": 0.00005,
-  "target": "label",
+  "target": "readm_30d",
   "datareader": "one-doc",
   "vocab_size": 3500,
   "embed_size": 100

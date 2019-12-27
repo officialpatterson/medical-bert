@@ -10,6 +10,7 @@ class FastTextClassifier:
         self.config = config
         self.model = FastText(config)
 
+        print(self.model)
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
         self.epochs = 0
@@ -88,10 +89,14 @@ class FastTextClassifier:
 
             # work around - for some reason reloading an optimizer that worked with CUDA tensors
             # causes an error - see https://github.com/pytorch/pytorch/issues/2830
+
             for state in self.optimizer.state.values():
                 for k, v in state.items():
                     if isinstance(v, torch.Tensor):
-                        state[k] = v.cuda()
+                        if self.config['device'] == 'cpu':
+                            state[k] = v
+                        else:
+                            state[k] = v.cuda()
 
     def load_from_checkpoint(self, checkpoint_file):
 
@@ -107,4 +112,7 @@ class FastTextClassifier:
             for state in self.optimizer.state.values():
                 for k, v in state.items():
                     if isinstance(v, torch.Tensor):
-                        state[k] = v.cuda()
+                        if self.config['device'] == 'cpu':
+                            state[k] = v
+                        else:
+                            state[k] = v.cuda()

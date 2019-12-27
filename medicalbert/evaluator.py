@@ -4,7 +4,9 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics import roc_auc_score, accuracy_score, average_precision_score
 from tqdm import tqdm
-
+from classifiers.fasttext_model import FastText
+import eli5
+from eli5.lime import TextExplainer
 
 def save(summary, logits, labels, path, name, losses):
     path = os.path.join(path, name)
@@ -46,7 +48,15 @@ class Evaluator:
             input_ids, input_mask, segment_ids, label_ids = batch
 
             with torch.no_grad():
-                out = self.model(input_ids=input_ids, token_type_ids = segment_ids, attention_mask=input_mask, labels=label_ids)
+                if isinstance(self.model, FastText):
+                    out = self.model(input_ids, labels=label_ids)
+
+                    te = TextExplainer(random_state=42)
+                    te.fit(input_ids[0].numpy(), self.model)
+                    te.show_prediction()
+                else:
+
+                    out = self.model(input_ids=input_ids, token_type_ids = segment_ids, attention_mask=input_mask, labels=label_ids)
                 tmp_eval_loss = out[0]
                 logits = out[1]
 
@@ -61,6 +71,7 @@ class Evaluator:
                 all_logits = logits
                 all_labels = labels
 
+
         roc = roc_auc_score(all_labels, all_logits[:,1])
         precision = average_precision_score(all_labels, all_logits[:,1])
         accuracy = accuracy_score(all_labels, np.argmax(all_logits, axis=1))
@@ -69,3 +80,5 @@ class Evaluator:
 
         print(summary)
         save(summary, all_logits, all_labels, self.path, name, all_losses)
+
+

@@ -8,7 +8,7 @@ from statistics import mean
 class BertPoolClassifier:
     def __init__(self, config):
         self.config = config
-        self.model = BertPoolClassifier.from_pretrained(self.config['pretrained_model'], output_hidden_states=True)
+        self.model = BertPoolModel.from_pretrained(self.config['pretrained_model'], output_hidden_states=True)
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
