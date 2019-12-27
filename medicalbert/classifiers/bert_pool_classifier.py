@@ -1,15 +1,17 @@
 import logging, os, torch
+from torch import nn
 
 from tqdm import trange, tqdm
-from classifiers.bert_pool_model import BertPoolModel
+from classifiers.bert_model import BertModel
 from statistics import mean
 
 
 class BertPoolClassifier:
     def __init__(self, config):
         self.config = config
-        self.model = BertPoolModel.from_pretrained(self.config['pretrained_model'], output_hidden_states=True)
+        model = BertModel.from_pretrained(self.config['pretrained_model'], output_hidden_states=True)
 
+        self.model = model.classifier = nn.Sequential(*list(model.classifier.children())[:-3])
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
         print(self.model)
