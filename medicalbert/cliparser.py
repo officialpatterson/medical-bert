@@ -97,4 +97,8 @@ def setup_parser():
                         default=None,
                         type=int,
                         help="Size of vocabulary.")
+    parser.add_argument("--layer",
+                        default=None,
+                        type=int,
+                        help="If the classifier only uses parts of a model then use this")
     return parser.parse_args()
