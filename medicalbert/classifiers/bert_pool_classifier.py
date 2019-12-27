@@ -11,7 +11,7 @@ class BertPoolClassifier:
         self.config = config
         model = BertModel.from_pretrained(self.config['pretrained_model'], output_hidden_states=True)
 
-        self.model = model.classifier = nn.Sequential(*list(model.classifier.children())[:-3])
+        self.model = model.classifier = nn.Sequential(*list(model.children())[:-3])
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
         print(self.model)
