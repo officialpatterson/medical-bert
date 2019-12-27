@@ -12,6 +12,7 @@ class BertPoolClassifier:
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
+        print(self.model)
         self.epochs = 0
 
     def train(self, datareader):
