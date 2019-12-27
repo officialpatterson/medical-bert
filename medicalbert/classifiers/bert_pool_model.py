@@ -26,6 +26,8 @@ class BertPoolModel(BertPreTrainedModel):
 
         hidden_states = outputs[2]
 
+        print(hidden_states)
+
         print(len(hidden_states))
         print(len(hidden_states[0]))
         pooled_output = self.dropout(outputs[1])
