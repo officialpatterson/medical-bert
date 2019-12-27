@@ -11,10 +11,11 @@ class BertPoolClassifier:
         self.config = config
         model = BertModel.from_pretrained(self.config['pretrained_model'], output_hidden_states=True)
 
-        self.model = model.classifier = nn.Sequential(*list(model.children())[:-3])
+        self.model = nn.Sequential(*list(model.children())[:-3])
+        print(self.model)
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
-        print(self.model)
+
         self.epochs = 0
 
     def train(self, datareader):
