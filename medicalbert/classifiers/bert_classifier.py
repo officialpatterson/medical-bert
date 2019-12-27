@@ -12,6 +12,7 @@ class BertGeneralClassifier:
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
+        self.model.set_layer_index(self.config['layer'])
         self.epochs = 0
 
     def train(self, datareader):

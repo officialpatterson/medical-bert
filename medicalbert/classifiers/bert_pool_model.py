@@ -1,7 +1,8 @@
 from torch import nn
-from torch.nn import CrossEntropyLoss, MSELoss
+from torch.nn import CrossEntropyLoss
 from transformers import BertPreTrainedModel, BertModel
-3
+
+#This model pools all the token embeddings for a given layer.
 
 class BertPoolModel(BertPreTrainedModel):
     def __init__(self, config):
@@ -14,6 +15,9 @@ class BertPoolModel(BertPreTrainedModel):
         self.head = nn.Softmax(dim=1)
         self.init_weights()
 
+        self.layer_index = -1 #default is the top/last layer
+    def set_layer_index(self, num):
+        self.layer_index = num
     def forward(self, input_ids=None, attention_mask=None, token_type_ids=None,
                 position_ids=None, head_mask=None, inputs_embeds=None, labels=None):
 
@@ -26,7 +30,7 @@ class BertPoolModel(BertPreTrainedModel):
 
         hidden_states = outputs[2]
 
-        layer = hidden_states[-1].mean(1) #average the embedding for each token
+        layer = hidden_states[self.layer_index].mean(1) #average the embedding for each token
 
         pooled_output = self.dropout(layer)
         logits = self.classifier(pooled_output)
