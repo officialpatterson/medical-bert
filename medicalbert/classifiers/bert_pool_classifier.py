@@ -1,7 +1,7 @@
 import logging, os, torch
 
 from tqdm import trange, tqdm
-from classifiers.bert_pool_model import BertPoolClassifier
+from classifiers.bert_pool_model import BertPoolModel
 from statistics import mean
 
 
