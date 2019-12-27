@@ -26,7 +26,7 @@ class BertPoolModel(BertPreTrainedModel):
 
         hidden_states = outputs[2]
 
-        layer = hidden_states[-1].mean(0)
+        layer = hidden_states[-1].mean(1)
         print(layer.shape)
         pooled_output = self.dropout(outputs[1])
         logits = self.classifier(pooled_output)
