@@ -28,7 +28,7 @@ class BertPoolModel(BertPreTrainedModel):
 
         print(len(hidden_states))
         print(len(hidden_states[0]))
-        pooled_output = self.dropout(hidden_states)
+        pooled_output = self.dropout(outputs[1])
         logits = self.classifier(pooled_output)
         logits = self.head(logits)
         outputs = (logits,) + outputs[2:]  # add hidden states and attention if they are here
