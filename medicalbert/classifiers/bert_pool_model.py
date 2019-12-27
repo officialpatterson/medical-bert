@@ -26,9 +26,9 @@ class BertPoolModel(BertPreTrainedModel):
 
         hidden_states = outputs[2]
 
-        layer = hidden_states[-1].mean(1)
-        print(layer.shape)
-        pooled_output = self.dropout(outputs[1])
+        layer = hidden_states[-1].mean(1) #average the embedding for each token
+
+        pooled_output = self.dropout(layer)
         logits = self.classifier(pooled_output)
         logits = self.head(logits)
         outputs = (logits,) + outputs[2:]  # add hidden states and attention if they are here
