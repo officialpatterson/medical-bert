@@ -107,4 +107,7 @@ class FastTextClassifier:
             for state in self.optimizer.state.values():
                 for k, v in state.items():
                     if isinstance(v, torch.Tensor):
-                        state[k] = v.cuda()
+                        if self.config['device'] == 'cuda':
+                            state[k] = v.cuda()
+                        else:
+                            state[k] = v
