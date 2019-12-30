@@ -21,10 +21,11 @@ class FastText(nn.Module):
         self.fc2 = nn.Linear(10, 2)
 
         # Softmax non-linearity
-        self.softmax = nn.Softmax()
+        self.softmax = nn.Softmax(dim=1)
 
-    def forward(self, x, labels=None):
-        embedded_sent = self.embeddings(x)
+    def forward(self, input_ids=None, attention_mask=None, token_type_ids=None,
+                position_ids=None, head_mask=None, inputs_embeds=None, labels=None):
+        embedded_sent = self.embeddings(input_ids)
 
         h = self.fc1(embedded_sent.mean(1))
         z = self.fc2(h)
