@@ -8,6 +8,7 @@ class FastText(nn.Module):
         super(FastText, self).__init__()
         self.config = config
 
+        self.num_labels = 2
         # Embedding Layer
         self.embeddings = nn.Embedding(self.config['vocab_size'], self.config['embed_size'])
 
@@ -35,9 +36,9 @@ class FastText(nn.Module):
 
         if labels is not None:
             loss_fct = CrossEntropyLoss()
-            loss = loss_fct(logits.view(-1, 2), labels.view(-1))
+            loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
 
-            outputs = (loss, logits)
+            outputs = (loss,) + outputs
         return outputs
 
 
