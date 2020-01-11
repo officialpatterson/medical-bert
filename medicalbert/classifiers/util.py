@@ -5,7 +5,7 @@ from torch import nn
 import copy
 
 def deleteEncodingLayers(model, num_layers_to_keep):  # must pass in the full bert model
-    oldModuleList = model.encoder.layer
+    oldModuleList = model.bert.encoder.layer
     newModuleList = nn.ModuleList()
 
     # Now iterate over all layers, only keepign only the relevant layers.
@@ -14,6 +14,6 @@ def deleteEncodingLayers(model, num_layers_to_keep):  # must pass in the full be
 
     # create a copy of the model, modify it with the new list, and return
     copyOfModel = copy.deepcopy(model)
-    copyOfModel.encoder.layer = newModuleList
+    copyOfModel.bert.encoder.layer = newModuleList
 
     return copyOfModel
