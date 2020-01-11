@@ -1,10 +1,10 @@
 {
   "data_dir" : "gs://storage.andrewrpatterson.com/readm_30d",
-  "output_dir" : "/home/apatterson/",
+  "output_dir" : "/Users/apatterson/Desktop",
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
   "num_train_examples": 2996,
-  "max_sequence_length": 510,
+  "max_sequence_length": 512,
   "warmup_proportion": 0.1,
   "seed": 1234,
   "device": "cuda",
@@ -19,7 +19,8 @@
   "learning_rate": 0.00005,
   "target": "label",
   "datareader": "one-doc",
-  "vocab_size": 3500,
+  "vocab_size": 29700,
   "embed_size": 100,
-  "layer": -1
+  "layer": -1,
+  "num_layers": 12
 }

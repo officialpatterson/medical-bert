@@ -6,7 +6,8 @@ import pandas as pd
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler
 from tqdm import tqdm
 
-
+#We suppress logging below error for this library, otherwise seq. longer than 512 will spam the console.
+logging.getLogger("transformers.tokenization_utils").setLevel(logging.ERROR)
 def _truncate_seq_pair(tokens_a, tokens_b, max_length):
     """Truncates a sequence pair in place to the maximum length."""
 
@@ -162,7 +163,7 @@ class DataReader:
             lbl = row[self.config['target']]
 
             input_example = InputExample(None, text, None, self.config['target'])
-            feature = convert_example_to_feature(input_example, lbl, 512, self.tokenizer)
+            feature = convert_example_to_feature(input_example, lbl, self.config['max_sequence_length'], self.tokenizer)
             input_features.append(feature)
 
         all_input_ids = torch.tensor([f.input_ids for f in input_features], dtype=torch.long)

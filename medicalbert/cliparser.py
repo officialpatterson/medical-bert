@@ -101,4 +101,12 @@ def setup_parser():
                         default=None,
                         type=int,
                         help="If the classifier only uses parts of a model then use this")
+    parser.add_argument("--max_sequence_length",
+                        default=None,
+                        type=int,
+                        help="maximum sequence length, each document will be truncated to this length.")
+    parser.add_argument("--num_layers",
+                        default=None,
+                        type=int,
+                        help="The number of encoding layers for a BERT model to keep.")
     return parser.parse_args()
