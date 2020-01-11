@@ -17,6 +17,8 @@ class BertGeneralClassifier:
         self.model = deleteEncodingLayers(self.model, config['num_layers'])
         self.epochs = 0
 
+        print(self.model)
+
     def train(self, datareader):
         device = torch.device(self.config['device'])
         self.model.train()
