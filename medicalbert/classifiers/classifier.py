@@ -62,7 +62,9 @@ class Classifier:
     def load_from_checkpoint(self):
 
         if 'load_from_checkpoint' in self.config:
-            file_path = os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints", self.config['load_from_checkpoint'])
+            file_path = os.path.join(self.config['output_dir'], "checkpoints", self.config['load_from_checkpoint'])
+
+
             checkpoint = torch.load(file_path)
             self.epochs = checkpoint['epoch']
             self.model.load_state_dict(checkpoint['bert_dict'])
