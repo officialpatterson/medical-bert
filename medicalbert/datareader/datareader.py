@@ -185,7 +185,7 @@ class DataReader:
             return self.train
 
         data = self.get_dataset(self.config['training_data'])
-        actual_batch_size = self.config['train_batch_size']
+        actual_batch_size = self.config['train_batch_size'] // self.config['gradient_accumulation_steps']
 
         logging.info("Using gradient accumulation - physical batch size is {}".format(actual_batch_size))
         self.train = DataLoader(data, sampler=RandomSampler(data), batch_size=actual_batch_size)
