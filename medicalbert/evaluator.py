@@ -1,29 +1,28 @@
-import logging, torch, json
-import os
-import pandas as pd
+import logging, torch, json, os
 import numpy as np
+import pandas as pd
 from sklearn.metrics import roc_auc_score, accuracy_score, average_precision_score
 from tqdm import tqdm
 
 
+# We save all the data in a 1er here.
 def save(summary, logits, labels, path, name, losses):
     path = os.path.join(path, name)
-    if not os.path.exists(path):
-        os.makedirs(path)
-    json.dump(summary, open(os.path.join(path, "summary.json"), 'w'))
+
+    # if we are using a local filesystem we'll need to create the dirs, otherwise we dont.
+    if path[:2] != "gs":
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    summary.to_csv(os.path.join(path, 'summary.csv'))
 
     first_logit = pd.Series(logits[:,0])
     second_logit = pd.Series(logits[:,1])
     labels = labels
 
-    frame = {'0': first_logit, '1': second_logit, 'label': labels}
+    frame = {'0': first_logit, '1': second_logit, 'label': labels, 'loss': losses}
 
     pd.DataFrame(frame).to_csv(os.path.join(path, "output.csv"))
-
-    with open(os.path.join(path, "batch_loss.csv"), "a") as f:
-        for loss in losses:
-            f.write("{}\n".format(loss))
-
 
 class Evaluator:
     def __init__(self, classifier, path, config):
@@ -65,7 +64,8 @@ class Evaluator:
         precision = average_precision_score(all_labels, all_logits[:,1])
         accuracy = accuracy_score(all_labels, np.argmax(all_logits, axis=1))
 
+        #create a Pandas dataframe from the summary dictionary.
         summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}
 
-        print(summary)
-        save(summary, all_logits, all_labels, self.path, name, all_losses)
+        summary = pd.DataFrame([summary])
+        save(summary, all_logits, all_labels, self.path, name, pd.Series(all_losses))

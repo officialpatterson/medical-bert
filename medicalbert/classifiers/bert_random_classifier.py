@@ -1,10 +1,9 @@
 import logging, os, torch
-
-from tqdm import trange, tqdm
+import pandas as pd
 from classifiers.bert_model import BertForSequenceClassification
-from statistics import mean
-
 from classifiers.util import deleteEncodingLayers
+from statistics import mean
+from tqdm import trange, tqdm
 
 
 class BertRandomClassifier:
@@ -22,6 +21,14 @@ class BertRandomClassifier:
         self.epochs = 0
 
         print(self.model)
+
+    def save_batch_losses(self, losses):
+        path = os.path.join(self.config['output_dir'], self.config['experiment_name'])
+        if path[:2] != "gs":
+            if not os.path.exists(path):
+                os.makedirs(path)
+
+        losses.to_csv(os.path.join(self.config['output_dir'], self.config['experiment_name'], "batch_loss.csv"))
 
     def train(self, datareader):
         device = torch.device(self.config['device'])
@@ -56,11 +63,7 @@ class BertRandomClassifier:
                         self.optimizer.step()
                         self.optimizer.zero_grad()
 
-            print(tr_loss)
-            with open(os.path.join(self.config['output_dir'], self.config['experiment_name'], "batch_loss.csv"), "a") as f:
-                for loss in batch_losses:
-                    f.write("{}\n".format(loss))
-                batch_losses = []  # reset it.
+            self.save_batch_losses(pd.DataFrame(batch_losses))
 
             # save a checkpoint here
             self.save()
