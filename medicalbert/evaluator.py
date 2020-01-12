@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 
 # We save all the data in a 1er here.
-def save(summary, logits, labels, path, name, losses):
+def save(summary, logits, labels, path, name):
     path = os.path.join(path, name)
 
     # if we are using a local filesystem we'll need to create the dirs, otherwise we dont.
@@ -20,7 +20,7 @@ def save(summary, logits, labels, path, name, losses):
     second_logit = pd.Series(logits[:,1])
     labels = labels
 
-    frame = {'0': first_logit, '1': second_logit, 'label': labels, 'loss': losses}
+    frame = {'0': first_logit, '1': second_logit, 'label': labels}
 
     pd.DataFrame(frame).to_csv(os.path.join(path, "output.csv"))
 
@@ -39,26 +39,25 @@ class Evaluator:
 
         all_logits = None
         all_labels = None
-        all_losses = []
+        all_losses = None
         for step, batch in enumerate(tqdm(data, desc="evaluating")):
             batch = tuple(t.to(device) for t in batch)
             input_ids, input_mask, segment_ids, label_ids = batch
 
             with torch.no_grad():
                 out = self.model(input_ids=input_ids, token_type_ids = segment_ids, attention_mask=input_mask, labels=label_ids)
-                tmp_eval_loss = out[0]
+                loss = out[0]
                 logits = out[1]
 
-            all_losses.append(tmp_eval_loss.mean().item())
             logits = logits.detach().cpu().numpy()
             labels = label_ids.detach().cpu().numpy()
 
             if all_logits is not None:
-                all_logits = np.concatenate((all_logits, logits))
                 all_labels = np.concatenate([all_labels, labels])
+                all_logits = np.concatenate([all_logits, logits])
             else:
-                all_logits = logits
                 all_labels = labels
+                all_logits = logits
 
         roc = roc_auc_score(all_labels, all_logits[:,1])
         precision = average_precision_score(all_labels, all_logits[:,1])
@@ -68,4 +67,4 @@ class Evaluator:
         summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}
 
         summary = pd.DataFrame([summary])
-        save(summary, all_logits, all_labels, self.path, name, pd.Series(all_losses))
+        save(summary, all_logits, all_labels, self.path, name)
