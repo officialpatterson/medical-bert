@@ -18,7 +18,7 @@
   "eval_batch_size": 16,
   "learning_rate": 0.00005,
   "target": "readm_30d",
-  "datareader": "one-doc",
+  "datareader": "no-cls-sep",
   "vocab_size": 29700,
   "embed_size": 100,
   "layer": -1,
