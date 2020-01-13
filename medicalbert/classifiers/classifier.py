@@ -1,4 +1,4 @@
-import logging, os, torch
+import gcsfs,logging, os, torch
 import pandas as pd
 from statistics import mean
 from tqdm import trange, tqdm
@@ -64,7 +64,6 @@ class Classifier:
         if 'load_from_checkpoint' in self.config:
             file_path = os.path.join(self.config['output_dir'], "checkpoints", self.config['load_from_checkpoint'])
 
-
             checkpoint = torch.load(file_path)
             self.epochs = checkpoint['epoch']
             self.model.load_state_dict(checkpoint['bert_dict'])
@@ -79,25 +78,49 @@ class Classifier:
                             state[k] = v.cuda()
                         else:
                             state[k] = v
+
+    def load_object_from_location(self, checkpoint_file):
+        if checkpoint_file[:2] != "gs":
+            return torch.load(checkpoint_file)
+        else:
+
+            fs = gcsfs.GCSFileSystem()
+            with fs.open(checkpoint_file, mode='rb') as f:
+                return torch.load(f)
 
     def load_from_checkpoint(self, checkpoint_file):
 
-        if 1==1:
-            file_path = os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints", checkpoint_file)
-            checkpoint = torch.load(file_path)
-            self.epochs = checkpoint['epoch']
-            self.model.load_state_dict(checkpoint['bert_dict'])
-            self.optimizer.load_state_dict(checkpoint['optimizer'])
+        checkpoint = self.load_object_from_location(checkpoint_file)
 
-            # work around - for some reason reloading an optimizer that worked with CUDA tensors
-            # causes an error - see https://github.com/pytorch/pytorch/issues/2830
-            for state in self.optimizer.state.values():
-                for k, v in state.items():
-                    if isinstance(v, torch.Tensor):
-                        if self.config['device'] == 'gpu':
-                            state[k] = v.cuda()
-                        else:
-                            state[k] = v
+        self.epochs = checkpoint['epoch']
+        self.model.load_state_dict(checkpoint['bert_dict'])
+        self.optimizer.load_state_dict(checkpoint['optimizer'])
+
+        # work around - for some reason reloading an optimizer that worked with CUDA tensors
+        # causes an error - see https://github.com/pytorch/pytorch/issues/2830
+        for state in self.optimizer.state.values():
+            for k, v in state.items():
+                if isinstance(v, torch.Tensor):
+                    if self.config['device'] == 'gpu':
+                        state[k] = v.cuda()
+                    else:
+                        state[k] = v
+
+    def save_object_to_location(self, object):
+
+        if self.config['output_dir'][:2] != "gs":
+            if not os.path.exists(
+                    os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints")):
+                os.makedirs(os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints"))
+            torch.save(object,
+                       os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints",
+                                    str(self.epochs)))
+        else:
+            fs = gcsfs.GCSFileSystem()
+            file_name = os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints",
+                                    str(self.epochs))
+            with fs.open(file_name, mode='wb') as f:
+                return torch.save(object, f)
 
     def save(self):
         checkpoint = {
@@ -105,11 +128,5 @@ class Classifier:
             'bert_dict': self.model.state_dict(),
             'optimizer': self.optimizer.state_dict(),
         }
-        # Make the output directory structure if it doesnt exist
-        if not os.path.exists(os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints")):
-            os.makedirs(os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints"))
-
-        torch.save(checkpoint, os.path.join(self.config['output_dir'], self.config['experiment_name'], "checkpoints",
-                                            str(self.epochs)))
-
+        self.save_object_to_location(checkpoint)
         logging.info("Saved model")

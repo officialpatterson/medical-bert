@@ -1,6 +1,6 @@
 # This method is the public interface. We use this to get a dataset.
 # If a tensor dataset does not exist, we create it.
-import logging, os, torch
+import logging, os, torch, gcsfs
 from pathlib import Path
 import pandas as pd
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler
@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 #We suppress logging below error for this library, otherwise seq. longer than 512 will spam the console.
 logging.getLogger("transformers.tokenization_utils").setLevel(logging.ERROR)
+
 def _truncate_seq_pair(tokens_a, tokens_b, max_length):
     """Truncates a sequence pair in place to the maximum length."""
 
@@ -140,25 +141,32 @@ class DataReader:
         self.train = None
         self.eval = None
 
-    def get_dataset(self, dataset):
+    def load_from_cache(self, dataset):
         path = os.path.join(self.config['output_dir'], self.config['experiment_name'])
         saved_file = os.path.join(path, Path(dataset).stem + ".pt")
 
-        logging.info(saved_file)
-        if os.path.isfile(saved_file):
-            logging.info("Using Cached dataset from {} - saves time!".format(saved_file))
-            return torch.load(saved_file)
+        # If we're using localfilesystem.
+        if saved_file[:2] != "gs":
+            if os.path.isfile(saved_file):
+                logging.info("Using Cached dataset from local disk {} - saves time!".format(saved_file))
+                return torch.load(saved_file)
 
+        #If we're here were using gcsfs
+        try:
+            fs = gcsfs.GCSFileSystem()
+            with fs.open(saved_file, mode='rb') as f:
+                return torch.load(f)
+        except:
+            return None
+
+    def build_fresh_dataset(self, dataset):
         logging.info("Building fresh dataset...")
 
         df = pd.read_csv(os.path.join(self.config['data_dir'], dataset))
 
-        logging.info(df.shape)
-
         input_features = []
 
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
-
             text = row['text']
             lbl = row[self.config['target']]
 
@@ -172,12 +180,35 @@ class DataReader:
         all_label_ids = torch.tensor([f.label_id for f in input_features], dtype=torch.long)
 
         td = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
+        return td
 
-        if not os.path.exists(path):
-            os.makedirs(path)
+    def save_dataset(self, dataset, tensorDataset):
+        path = os.path.join(self.config['output_dir'], self.config['experiment_name'])
 
-        logging.info("saving dataset at {}".format(saved_file))
-        torch.save(td, saved_file)
+        saved_file = os.path.join(path, Path(dataset).stem + ".pt")
+
+        # If we are using local disk then make the path.
+        if path[:2] != "gs":
+            if not os.path.exists(path):
+                os.makedirs(path)
+
+            logging.info("saving dataset at {}".format(saved_file))
+            torch.save(tensorDataset, saved_file)
+        else:
+            fs = gcsfs.GCSFileSystem()
+            with fs.open(saved_file, 'wb') as f:
+                torch.save(tensorDataset, f)
+
+    def get_dataset(self, dataset):
+
+        # 1. load cached version if we can
+        td = self.load_from_cache(dataset)
+
+        # build a fresh copy
+        if td is None:
+            td = self.build_fresh_dataset(dataset)
+
+            self.save_dataset(dataset, td)
         return td
 
     def get_train(self):

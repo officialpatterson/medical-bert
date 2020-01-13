@@ -1,4 +1,4 @@
-import logging, torch, json, os
+import logging, torch, os
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score, accuracy_score, average_precision_score
@@ -23,6 +23,7 @@ def save(summary, logits, labels, path, name):
     frame = {'0': first_logit, '1': second_logit, 'label': labels}
 
     pd.DataFrame(frame).to_csv(os.path.join(path, "output.csv"))
+
 
 class Evaluator:
     def __init__(self, classifier, path, config):
