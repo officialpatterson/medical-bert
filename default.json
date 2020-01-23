@@ -16,7 +16,7 @@
   "train_batch_size": 16,
   "gradient_accumulation_steps": 16,
   "eval_batch_size": 16,
-  "learning_rate": 0.00005,
+  "learning_rate": 0.000005,
   "target": "readm_30d",
   "datareader": "no-cls-sep",
   "vocab_size": 29700,
