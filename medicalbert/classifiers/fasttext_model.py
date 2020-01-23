@@ -1,6 +1,6 @@
 # PyTorch implementation of FastText (so its not very fast!)
 from torch import nn
-from torch.nn import CrossEntropyLoss, MSELoss
+from torch.nn import NLLLoss
 
 
 class FastText(nn.Module):
@@ -35,7 +35,7 @@ class FastText(nn.Module):
         outputs = (logits,)
 
         if labels is not None:
-            loss_fct = CrossEntropyLoss()
+            loss_fct = NLLLoss()
             loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
 
             outputs = (loss,) + outputs
