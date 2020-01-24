@@ -3,7 +3,7 @@
   "output_dir" : "/home/apatterson/",
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
-  "num_train_examples": 2996,
+  "num_train_examples": 4194,
   "max_sequence_length": 512,
   "warmup_proportion": 0.1,
   "seed": 1234,
@@ -18,9 +18,8 @@
   "eval_batch_size": 16,
   "learning_rate": 0.000005,
   "target": "readm_30d",
-  "datareader": "no-cls-sep",
+  "datareader": "one-doc",
   "vocab_size": 29700,
   "embed_size": 100,
-  "layer": -1,
   "num_layers": 12
 }
