@@ -39,6 +39,10 @@ class Classifier:
                         batch_losses.append(mean(batche))
                         # Update the model gradients
                         self.optimizer.step()
+
+                        if self.scheduler:
+                            self.scheduler.step()
+
                         self.optimizer.zero_grad()
 
             # save a checkpoint here
