@@ -40,8 +40,7 @@ class Classifier:
                         # Update the model gradients
                         self.optimizer.step()
 
-                        if self.scheduler:
-                            self.scheduler.step()
+                        self.scheduler.step()
 
                         self.optimizer.zero_grad()
 

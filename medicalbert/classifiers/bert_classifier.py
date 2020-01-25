@@ -12,7 +12,9 @@ class BertGeneralClassifier(Classifier):
 
         self.optimizer = AdamW(self.model.parameters(), self.config['learning_rate'])
 
-        warmup_steps = int(self.config['warmup_proportion'] * self.config['num_train_examples']/self.config['train_batch_size'])
+        total_steps = ( self.config['num_train_examples']/self.config['train_batch_size'])*self.config['epochs']
+
+        warmup_steps = int(self.config['warmup_proportion'] * total_steps)
         num_train_steps = int(self.config['num_train_examples']/self.config['train_batch_size'])
         self.scheduler = get_linear_schedule_with_warmup(self.optimizer, num_warmup_steps=warmup_steps,
                                                     num_training_steps=num_train_steps)
