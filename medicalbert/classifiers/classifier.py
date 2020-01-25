@@ -40,8 +40,6 @@ class Classifier:
                         # Update the model gradients
                         self.optimizer.step()
 
-                        self.scheduler.step()
-
                         self.optimizer.zero_grad()
 
             # save a checkpoint here
