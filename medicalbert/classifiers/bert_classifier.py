@@ -24,7 +24,7 @@ class BertGeneralClassifier(Classifier):
                                   warmup=self.config['warmup_proportion'],
                                   t_total=num_steps)
 
-
+        self.epochs = 0
         print(self.model)
 
 
