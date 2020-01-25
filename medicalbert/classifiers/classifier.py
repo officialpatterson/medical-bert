@@ -38,8 +38,9 @@ class Classifier:
                     if (step + 1) % self.config['gradient_accumulation_steps'] == 0:
                         batch_losses.append(mean(batche))
                         # Update the model gradients
+                        torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
                         self.optimizer.step()
-
+                        self.scheduler.step()
                         self.optimizer.zero_grad()
 
             # save a checkpoint here
