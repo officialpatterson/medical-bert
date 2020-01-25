@@ -168,7 +168,7 @@ class DataReader:
         df['text'] = df['text'].str.replace(r'\t', ' ', regex=True)
         df['text'] = df['text'].str.replace(r'\n', ' ', regex=True)
         df['text'] = df['text'].str.lower()
-        
+
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
             text = row['text']
             lbl = row[self.config['target']]
