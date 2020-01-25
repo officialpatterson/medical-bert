@@ -11,7 +11,7 @@ class BertGeneralClassifier(Classifier):
         self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
 
         # here, we can do some layer removal if we want to
-        self.model = deleteEncodingLayers(self.model, config['num_layers'])
+        #self.model = deleteEncodingLayers(self.model, config['num_layers'])
 
         #setup the optimizer
 
