@@ -2,7 +2,6 @@
 from torch import nn
 from torch.nn import NLLLoss
 
-
 class FastText(nn.Module):
     def __init__(self, config, word_embeddings=None):
         super(FastText, self).__init__()
