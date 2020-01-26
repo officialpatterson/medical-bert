@@ -10,7 +10,7 @@ class FastTextClassifier(Classifier):
         self.config = config
         self.model = FastText(config)
 
-        self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
+        self.optimizer = torch.optim.SGD(self.model.parameters(), self.config['learning_rate'])
 
         self.epochs = 0
 
@@ -38,6 +38,12 @@ class FastTextClassifier(Classifier):
             self.optimizer.step()
 
         return train_losses, val_accuracies
+
+    def reduce_lr(self):
+        print("Reducing LR")
+        for g in self.optimizer.param_groups:
+            g['lr'] = g['lr'] / 2
+
     def train(self, datareader):
         device = torch.device(self.config['device'])
         self.model.train()
