@@ -18,24 +18,25 @@ class FastTextClassifier(Classifier):
         train_losses = []
         val_accuracies = []
         losses = []
-
+        device = torch.device(self.config['device'])
         # Reduce learning rate as number of epochs increase
         if (epoch == int(self.config['epochs'] / 3)) or (epoch == int(2 * self.config['epochs'] / 3)):
             self.reduce_lr()
 
-        for i, batch in enumerate(train_iterator):
-            self.optimizer.zero_grad()
-            if torch.cuda.is_available():
-                x = batch.text.cuda()
-                y = (batch.label - 1).type(torch.cuda.LongTensor)
-            else:
-                x = batch.text
-                y = (batch.label - 1).type(torch.LongTensor)
-            y_pred = self.__call__(x)
-            loss = self.loss_op(y_pred, y)
+        for step, batch in enumerate(train_iterator):
+
+            batch = tuple(t.to(device) for t in batch)
+            input_ids, input_mask, segment_ids, label_ids = batch
+
+            loss = self.model(input_ids, labels=label_ids)[0]
+
+            loss = loss / self.config['gradient_accumulation_steps']
+
             loss.backward()
-            losses.append(loss.data.cpu().numpy())
-            self.optimizer.step()
+
+            if (step + 1) % self.config['gradient_accumulation_steps'] == 0:
+                self.optimizer.step()
+                self.optimizer.zero_grad()
 
         return train_losses, val_accuracies
 
