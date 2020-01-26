@@ -19,7 +19,10 @@ class BertGeneralClassifier(Classifier):
         num_steps = int(self.config['num_train_examples'] / bs /
                         self.config['gradient_accumulation_steps']) * self.config['epochs']
 
-        self.optimizer = BertAdam(self.model.parameters(),
+        optimizer_grouped_parameters = [
+            {'params': self.model.parameters(), 'lr': self.config['learning_rate']}
+        ]
+        self.optimizer = BertAdam(optimizer_grouped_parameters,
                                   lr=self.config['learning_rate'],
                                   warmup=self.config['warmup_proportion'],
                                   t_total=num_steps)
