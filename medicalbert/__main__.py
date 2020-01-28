@@ -1,4 +1,4 @@
-import os, logging, torch
+import json, logging, os, torch
 import random
 from config import get_configuration
 import numpy as np
@@ -21,6 +21,12 @@ if __name__ == "__main__":
     args = setup_parser()
     defconfig = get_configuration(args)
     print(defconfig)
+
+    #save the config values inot the experiment directory for record-keeping
+    config_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], 'config.json')
+
+    with open(config_path, 'w') as f:
+        json.dump(defconfig, f)
 
     logging.info("Number of GPUS: {}".format(torch.cuda.device_count()))
 
