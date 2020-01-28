@@ -1,9 +1,9 @@
 {
-  "data_dir" : "gs://storage.andrewrpatterson.com/datasets/exp",
-  "output_dir" : "/Users/apatterson/Desktop/",
+  "data_dir" : "gs://storage.andrewrpatterson.com/datasets/readm_30d",
+  "output_dir" : "apatterson/medical-bert",
   "training_data" : "train.csv",
-  "validation_data" :"test.csv",
-  "num_train_examples": 4194,
+  "validation_data" :"validation.csv",
+  "num_train_examples": 3835,
   "max_sequence_length": 512,
   "warmup_proportion": 0.1,
   "seed": 1234,
