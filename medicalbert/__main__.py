@@ -24,6 +24,9 @@ if __name__ == "__main__":
 
     #save the config values inot the experiment directory for record-keeping
     config_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], 'config.json')
+    if not os.path.exists(
+            os.path.join(defconfig['output_dir'], defconfig['experiment_name'])):
+        os.makedirs(os.path.join(defconfig['output_dir'], defconfig['experiment_name']))
 
     with open(config_path, 'w') as f:
         json.dump(defconfig, f)
@@ -84,7 +87,7 @@ if __name__ == "__main__":
         classifier.load_from_checkpoint(os.path.join(checkpoints_path, best_checkpoint))
         test_result_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results")
 
-        evaluator = Evaluator(classifier, results_path, defconfig)
+        evaluator = Evaluator(classifier, test_result_path, defconfig)
 
-        evaluator.run(datareader.get_test(), "test")
+        evaluator.run(datareader.get_test(), "test"+"_"+best_checkpoint+"_"+str(best_roc_score))
 

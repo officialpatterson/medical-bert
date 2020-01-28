@@ -9,6 +9,7 @@ class BertRandomClassifier(Classifier):
         self.config = config
         self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
 
+        # We cheat the framework here - we make a new model based on the config of a pretrained model.
         self.model =  BertForSequenceClassification(self.model.config)
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
