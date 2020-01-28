@@ -4,7 +4,7 @@
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
   "num_train_examples": 4194,
-  "max_sequence_length": 510,
+  "max_sequence_length": 512,
   "warmup_proportion": 0.1,
   "seed": 1234,
   "device": "cuda",

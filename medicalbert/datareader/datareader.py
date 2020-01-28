@@ -44,8 +44,8 @@ def convert_example_to_feature(example, label, max_seq_length, tokenizer):
         _truncate_seq_pair(tokens_a, tokens_b, max_seq_length - 3)
     else:
         # Account for [CLS] and [SEP] with "- 2"
-        if len(tokens_a) > 510:
-            tokens_a = tokens_a[-510:]
+        if len(tokens_a) > (max_seq_length-2):
+            tokens_a = tokens_a[-(max_seq_length-2):]
 
     # The convention in BERT is:
     # (a) For sequence pairs:
