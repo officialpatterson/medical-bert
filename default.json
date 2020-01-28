@@ -3,6 +3,7 @@
   "output_dir" : "apatterson/medical-bert",
   "training_data" : "train.csv",
   "validation_data" :"validation.csv",
+  "test_data" : "test.csv",
   "num_train_examples": 3835,
   "max_sequence_length": 512,
   "warmup_proportion": 0.1,

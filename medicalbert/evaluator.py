@@ -69,3 +69,5 @@ class Evaluator:
 
         summary = pd.DataFrame([summary])
         save(summary, all_logits, all_labels, self.path, name)
+
+        return roc

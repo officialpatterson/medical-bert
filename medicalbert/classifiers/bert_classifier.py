@@ -2,8 +2,7 @@ import torch
 from classifiers.bert_model import BertForSequenceClassification
 from classifiers.classifier import Classifier
 from classifiers.util import deleteEncodingLayers
-from transformers import AdamW, get_linear_schedule_with_warmup
-from pytorch_pretrained_bert import BertAdam
+
 
 class BertGeneralClassifier(Classifier):
     def __init__(self, config):

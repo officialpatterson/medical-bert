@@ -140,7 +140,8 @@ class DataReader:
         self.max_sequence_length = config['max_sequence_length']
         self.config = config
         self.train = None
-        self.eval = None
+        self.valid = None
+        self.test = None
 
     def load_from_cache(self, dataset):
         path = os.path.join(self.config['output_dir'], self.config['experiment_name'])
@@ -226,11 +227,20 @@ class DataReader:
         self.train = DataLoader(data, shuffle=True, batch_size=actual_batch_size)
         return self.train
 
-    def get_eval(self):
-        if self.eval:
-            return self.eval
+    def get_validation(self):
+        if self.valid:
+            return self.valid
 
         data = self.get_dataset(self.config['validation_data'])
 
-        self.eval = DataLoader(data, shuffle=False, batch_size=self.config['eval_batch_size'])
-        return self.eval
+        self.valid = DataLoader(data, shuffle=False, batch_size=self.config['eval_batch_size'])
+        return self.valid
+
+    def get_test(self):
+        if self.test:
+            return self.test
+
+        data = self.get_dataset(self.config['test_data'])
+
+        self.test = DataLoader(data, shuffle=False, batch_size=self.config['eval_batch_size'])
+        return self.test

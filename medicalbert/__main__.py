@@ -56,6 +56,8 @@ if __name__ == "__main__":
         # Loop over all the checkpoints, running evaluations on all them.
         checkpoints_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "checkpoints")
 
+        best_roc_score = 0
+        best_checkpoint = None
         for checkpoint in os.listdir(checkpoints_path):
 
             # Load the checkpoint model
@@ -66,8 +68,17 @@ if __name__ == "__main__":
             evaluator = Evaluator(classifier, results_path, defconfig)
 
             evaluator.run(datareader.get_train(), "train")
-            evaluator.run(datareader.get_eval(), "eval")
+            roc_score = evaluator.run(datareader.get_validation(), "validation")
 
+            if roc_score >= best_roc_score:
+                best_roc_score = roc_score
+                best_checkpoint = checkpoint
 
+        print("Running test Evaluation")
+        classifier.load_from_checkpoint(os.path.join(checkpoints_path, best_checkpoint))
+        test_result_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results")
 
+        evaluator = Evaluator(classifier, results_path, defconfig)
+
+        evaluator.run(datareader.get_test(), "test")
 
