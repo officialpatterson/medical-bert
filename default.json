@@ -1,6 +1,6 @@
 {
   "data_dir" : "gs://storage.andrewrpatterson.com/datasets/readm_30d",
-  "output_dir" : "apatterson/medical-bert",
+  "output_dir" : "/home/apatterson/",
   "training_data" : "train.csv",
   "validation_data" :"validation.csv",
   "test_data" : "test.csv",
