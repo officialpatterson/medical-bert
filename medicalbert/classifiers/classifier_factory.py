@@ -4,7 +4,6 @@ from classifiers.bert_random_classifier import BertRandomClassifier
 from classifiers.fast_text_classifier import FastTextClassifier
 from classifiers.bert_mean_pool_classifier import BertMeanPoolClassifier
 
-
 class ClassifierFactory:
     def __init__(self, config):
         self._classifiers = {"bert-general": BertGeneralClassifier,

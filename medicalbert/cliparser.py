@@ -10,6 +10,9 @@ def setup_parser():
                         type=str,
                         help="Continue training from a saved model.")
 
+    parser.add_argument("--save_tokenized_text",
+                        action='store_true',
+                        help="this will output the tokenized process text into a CSV format")
     parser.add_argument("--train",
                         action='store_true',
                         help="Whether to run training.")

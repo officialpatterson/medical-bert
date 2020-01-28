@@ -39,6 +39,9 @@ if __name__ == "__main__":
 
     datareader = dataReaderFactory.make_datareader(defconfig['datareader'], tokenizer)
 
+    if args.save_tokenized_text:
+        datareader.convert_and_save()
+
     if args.train:
 
         # Load from checkpoint if we're using one (won't do anything if were not)

@@ -1,6 +1,6 @@
 {
   "data_dir" : "gs://storage.andrewrpatterson.com/datasets/exp",
-  "output_dir" : "/home/apatterson/",
+  "output_dir" : "/Users/apatterson/Desktop/",
   "training_data" : "train.csv",
   "validation_data" :"test.csv",
   "num_train_examples": 4194,
