@@ -2,6 +2,7 @@ import logging, torch, os
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score, accuracy_score, average_precision_score
+from torch.nn import CrossEntropyLoss
 from tqdm import tqdm
 
 
@@ -60,14 +61,17 @@ class Evaluator:
                 all_labels = labels
                 all_logits = logits
 
+        loss_fct = CrossEntropyLoss()
+        loss = loss_fct(torch.from_numpy(all_logits), torch.from_numpy(all_labels)).item()
+
         roc = roc_auc_score(all_labels, all_logits[:,1])
         precision = average_precision_score(all_labels, all_logits[:,1])
         accuracy = accuracy_score(all_labels, np.argmax(all_logits, axis=1))
 
         #create a Pandas dataframe from the summary dictionary.
-        summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy}
+        summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy, "LOSS": loss}
 
         summary = pd.DataFrame([summary])
         save(summary, all_logits, all_labels, self.path, name)
 
-        return roc
+        return loss

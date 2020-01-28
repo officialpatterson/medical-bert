@@ -1,6 +1,6 @@
 {
   "data_dir" : "gs://storage.andrewrpatterson.com/datasets/readm_30d",
-  "output_dir" : "/home/apatterson/",
+  "output_dir" : "/Users/apatterson/Desktop/",
   "training_data" : "train.csv",
   "validation_data" :"validation.csv",
   "test_data" : "test.csv",
@@ -17,7 +17,7 @@
   "train_batch_size": 16,
   "gradient_accumulation_steps": 4,
   "eval_batch_size": 16,
-  "learning_rate": 0.00002,
+  "learning_rate": 0.00001,
   "target": "readm_30d",
   "datareader": "one-doc",
   "vocab_size": 29700,
