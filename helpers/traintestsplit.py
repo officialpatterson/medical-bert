@@ -46,13 +46,13 @@ def main(input_data, output_dir, ratio):
     print("Splitting into training and testing")
     train, test = split_data(data, ratio)
 
-    # undersample the train
-    print("Undersampling the train")
-    train = resample_data(train)
-
     # split into train and validation
     print("spliting train into train and validation")
     train, validation = split_data(train, ratio)
+
+    # undersample the train
+    print("Undersampling the train")
+    train = resample_data(train)
 
     # now save the files
     if not os.path.exists(output_dir):

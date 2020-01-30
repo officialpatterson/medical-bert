@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
         # Load from checkpoint if we're using one (won't do anything if were not)
         if args.train_from_checkpoint:
-            classifier.load_from_checkpoint()
+            classifier.load_from_checkpoint(args.train_from_checkpoint)
 
         # Pass the classifier to the trainer
         classifier.train(datareader)
