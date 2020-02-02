@@ -1,6 +1,6 @@
 {
   "data_dir" : "gs://storage.andrewrpatterson.com/datasets/readm_30d_x2",
-  "output_dir" : "/Users/apatterson/Desktop/",
+  "output_dir" : "/home/apatterson/",
   "training_data" : "train.csv",
   "validation_data" :"validation.csv",
   "test_data" : "test.csv",
