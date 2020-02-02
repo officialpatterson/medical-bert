@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 def process_data(expname, split):
     results = None
-    for filename in glob.iglob("/Users/apatterson/Desktop/" + expname + "/" + "**/" + split + "/summary.csv",
+    for filename in glob.iglob("/Users/apatterson/Desktop/runs-head/" + expname + "/" + "**/" + split + "/summary.csv",
                                recursive=True):
         # extract the epoch number
         df = pd.read_csv(filename, index_col=0)
@@ -21,6 +21,7 @@ def process_data(expname, split):
         else:
             results = df
     results['data_split'] = split
+    results['expname'] = expname
     return results
 
 if __name__ == "__main__":

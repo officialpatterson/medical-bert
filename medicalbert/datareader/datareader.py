@@ -89,7 +89,6 @@ def convert_example_to_feature(example, label, max_seq_length, tokenizer):
     input_mask = [1] * len(input_ids)
 
     # Zero-pad up to the sequence length.
-    max_seq_length = 512
     while len(input_ids) < max_seq_length:
         input_ids.append(0)
         input_mask.append(0)

@@ -16,7 +16,9 @@ def setup_parser():
     parser.add_argument("--train",
                         action='store_true',
                         help="Whether to run training.")
-
+    parser.add_argument("--output_embeddings",
+                        action='store_true',
+                        help="Will take in a classifier and use the underlying model to output the token embeddings")
     parser.add_argument("--eval",
                         action='store_true',
                         help="Whether to run eval on the dev set.")
