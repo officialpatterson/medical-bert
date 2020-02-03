@@ -11,7 +11,6 @@ class BertMeanPoolClassifier(Classifier):
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
         # here, we can do some layer removal if we want to
-        self.model = deleteEncodingLayers(self.model, config['num_layers'])
         self.epochs = 0
 
         print(self.model)
