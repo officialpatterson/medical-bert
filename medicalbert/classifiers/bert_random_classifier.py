@@ -14,19 +14,10 @@ class BertRandomClassifier(Classifier):
         self.model =  BertForSequenceClassification(self.model.config)
 
         # here, we can do some layer removal if we want to
+        self.model = deleteEncodingLayers(self.model, config['num_layers'])
 
-        num_steps = int(self.config['num_train_examples'] / self.config['train_batch_size'] /
-                        self.config['gradient_accumulation_steps']) * \
-                    self.config['epochs']
-
-        optimizer_grouped_parameters = [
-            {'params': self.model.parameters(), 'lr': self.config['learning_rate']}
-        ]
-
-        self.optimizer = BertAdam(optimizer_grouped_parameters,
-                                  lr=self.config['learning_rate'],
-                                  warmup=self.config['warmup_proportion'],
-                                  t_total=num_steps)
+        #setup the optimizer
+        self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
         self.epochs = 0
 
