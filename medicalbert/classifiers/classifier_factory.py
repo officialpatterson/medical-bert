@@ -9,7 +9,8 @@ class ClassifierFactory:
         self._classifiers = {"bert-general": BertGeneralClassifier,
                              "bert-random": BertRandomClassifier,
                              "fast-text": FastTextClassifier,
-                             "bert-mean-pool": BertMeanPoolClassifier}
+                             "bert-mean-pool": BertMeanPoolClassifier,
+                             "bert-concat": BertMeanPoolClassifier}
         self.config = config
 
     def register_classifier(self, name, classifier):
