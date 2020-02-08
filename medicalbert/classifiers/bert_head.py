@@ -20,6 +20,7 @@ class BERTLSTMHead(nn.Module):
         self.dense = nn.LSTM(512, 768, 2, batch_first = True)
 
     def forward(self, hidden_states):
+        print(hidden_states.shape)
         # We "pool" the model by simply taking all the hidden states and averaging them.
         pooled_output = self.dense(hidden_states)
         return pooled_output[0]
