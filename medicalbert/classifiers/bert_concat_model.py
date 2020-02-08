@@ -35,11 +35,13 @@ class BertConcatModel(BertPreTrainedModel):
                             inputs_embeds=inputs_embeds)
 
         print(outputs[1].shape)
-        pooled_output = outputs[1][0]
+        pooled_output = outputs
+
 
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
         logits = self.head(logits)
+
         outputs = (logits,) + outputs[2:]  # add hidden states and attention if they are here
 
         if labels is not None:
