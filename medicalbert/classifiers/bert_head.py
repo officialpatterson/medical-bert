@@ -23,4 +23,4 @@ class BERTFCHead(nn.Module):
         print(hidden_states.shape)
         # We "pool" the model by simply taking all the hidden states and averaging them.
         pooled_output = self.dense(hidden_states)
-        return pooled_output[1]
+        return pooled_output[0]
