@@ -35,7 +35,7 @@ class BertConcatModel(BertPreTrainedModel):
                             inputs_embeds=inputs_embeds)
 
         print(outputs[1].shape)
-        pooled_output = outputs
+        pooled_output = outputs[1]
 
 
         pooled_output = self.dropout(pooled_output)
