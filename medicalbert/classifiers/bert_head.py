@@ -14,9 +14,9 @@ class BertMeanPooling(nn.Module):
         return pooled_output
 
 
-class BERTFCHead(nn.Module):
+class BERTLSTMHead(nn.Module):
     def __init__(self, config):
-        super(BERTFCHead, self).__init__()
+        super(BERTLSTMHead, self).__init__()
         self.dense = nn.Linear(config.hidden_size*512, config.hidden_size)
 
     def forward(self, hidden_states):
