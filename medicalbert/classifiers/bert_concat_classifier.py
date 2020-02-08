@@ -8,7 +8,6 @@ class BertConcatClassifier(Classifier):
         self.config = config
         self.model = BertConcatModel.from_pretrained(self.config['pretrained_model'])
 
-        self.model.pooler =
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
         # here, we can do some layer removal if we want to
