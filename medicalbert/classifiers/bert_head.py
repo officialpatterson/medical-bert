@@ -17,7 +17,7 @@ class BertMeanPooling(nn.Module):
 class BERTLSTMHead(nn.Module):
     def __init__(self, config):
         super(BERTLSTMHead, self).__init__()
-        self.dense = nn.LSTM(config.hidden_size, 768, 2, batch_first = True)
+        self.dense = nn.LSTM(config.hidden_size, 768, 2)
 
     def forward(self, hidden_states):
         # We "pool" the model by simply taking all the hidden states and averaging them.
