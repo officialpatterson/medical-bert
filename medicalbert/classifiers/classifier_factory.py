@@ -3,6 +3,8 @@ from classifiers.bert_classifier import BertGeneralClassifier
 from classifiers.bert_random_classifier import BertRandomClassifier
 from classifiers.fast_text_classifier import FastTextClassifier
 from classifiers.bert_mean_pool_classifier import BertMeanPoolClassifier
+from classifiers.bert_concat_classifier import BertConcatClassifier
+
 
 class ClassifierFactory:
     def __init__(self, config):
@@ -10,7 +12,7 @@ class ClassifierFactory:
                              "bert-random": BertRandomClassifier,
                              "fast-text": FastTextClassifier,
                              "bert-mean-pool": BertMeanPoolClassifier,
-                             "bert-concat": BertMeanPoolClassifier}
+                             "bert-concat": BertConcatClassifier}
         self.config = config
 
     def register_classifier(self, name, classifier):

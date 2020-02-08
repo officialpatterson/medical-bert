@@ -3,7 +3,7 @@ from classifiers.classifier import Classifier
 from classifiers.util import deleteEncodingLayers
 from classifiers.bert_concat_model import BertConcatModel
 
-class BertMeanPoolClassifier(Classifier):
+class BertConcatClassifier(Classifier):
     def __init__(self, config):
         self.config = config
         self.model = BertConcatModel.from_pretrained(self.config['pretrained_model'])
