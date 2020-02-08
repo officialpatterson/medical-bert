@@ -1,7 +1,7 @@
 from torch import nn
 from torch.nn import CrossEntropyLoss
 from transformers import BertPreTrainedModel, BertModel
-from classifiers.bert_head import BertMeanPooling
+from classifiers.bert_head import BERTFCHead
 
 ##
 # In this model,
@@ -14,10 +14,10 @@ class BertConcatModel(BertPreTrainedModel):
         super(BertConcatModel, self).__init__(config)
         self.num_labels = config.num_labels
 
-        self.bert = BertModel(config)
+        self.bert = BERTFCHead(config)
 
         # remove the pooling layer and replace with our own
-        self.bert.pooler = BertMeanPooling(config)
+        self.bert.pooler = BERTFCHead(config)
 
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.classifier = nn.Linear(config.hidden_size, self.config.num_labels)

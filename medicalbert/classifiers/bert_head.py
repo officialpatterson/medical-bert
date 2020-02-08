@@ -17,10 +17,10 @@ class BertMeanPooling(nn.Module):
 class BERTFCHead(nn.Module):
     def __init__(self, config):
         super(BERTFCHead, self).__init__()
-        self.dense = nn.LSTM(768, 768, 2, batch_first = True)
+        self.lstm = nn.LSTM(768, 768, 2, batch_first = True)
 
     def forward(self, hidden_states):
         print(hidden_states.shape)
         # We "pool" the model by simply taking all the hidden states and averaging them.
-        pooled_output = self.dense(hidden_states)
+        pooled_output = self.lstm(hidden_states)
         return pooled_output[0]
