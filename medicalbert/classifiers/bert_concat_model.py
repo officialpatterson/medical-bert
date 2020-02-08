@@ -34,7 +34,7 @@ class BertConcatModel(BertPreTrainedModel):
                             head_mask=head_mask,
                             inputs_embeds=inputs_embeds)
 
-        print(outputs[1].shape)
+        print("Shape: {}".format(outputs[1].shape))
         pooled_output = outputs[1]
 
 
