@@ -21,5 +21,5 @@ class BERTLSTMHead(nn.Module):
 
     def forward(self, hidden_states):
         # We "pool" the model by simply taking all the hidden states and averaging them.
-        pooled_output = self.dense(hidden_states.mean)
+        pooled_output = self.dense(hidden_states)
         return pooled_output
