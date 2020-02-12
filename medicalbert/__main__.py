@@ -33,7 +33,8 @@ if __name__ == "__main__":
 
     logging.info("Number of GPUS: {}".format(torch.cuda.device_count()))
 
-    set_random_seeds(defconfig['seed'])
+    if defconfig['seed']:
+        set_random_seeds(defconfig['seed'])
 
     # Load the tokenizer to use
     tokenizerFactory = TokenizerFactory()
