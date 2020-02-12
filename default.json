@@ -7,7 +7,6 @@
   "num_train_examples": 3835,
   "max_sequence_length": 512,
   "warmup_proportion": 0.1,
-  "seed": 1234,
   "device": "cuda",
   "classifier" : "bert-general",
   "tokenizer" : "bert-base-uncased",
