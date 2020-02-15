@@ -7,10 +7,10 @@ sns.set()
 import matplotlib.pyplot as plt
 
 
-def process_data(expname, split):
+def process_data(experimentPath, split):
     results = None
-    for filename in glob.iglob("/Users/apatterson/Desktop/runs-head/" + expname + "/" + "**/" + split + "/summary.csv",
-                               recursive=True):
+    path = experimentPath + "/" + "**/" + split + "/summary.csv"
+    for filename in glob.iglob(path, recursive=True):
         # extract the epoch number
         df = pd.read_csv(filename, index_col=0)
         df['EPOCH'] = int(filename.split("/")[-3:-2][0])
@@ -21,7 +21,7 @@ def process_data(expname, split):
         else:
             results = df
     results['data_split'] = split
-    results['expname'] = expname
+    results['expname'] = experimentPath
     return results
 
 if __name__ == "__main__":
@@ -30,9 +30,15 @@ if __name__ == "__main__":
 
     parser.add_option("--input", help="specify the input data")
 
-    exp = "test3"
-    train = process_data(exp, "train")
-    validation = process_data(exp, "validation")
-    results = pd.concat([train, validation], axis=0)
-    ax = sns.lineplot(x="EPOCH", y="LOSS", data=results, hue="data_split")
+    parser.add_option("--y_columns", help="y column name")
+    parser.add_option("--save_dataframe", help="location to save the data frame to ")
+    (options, args) = parser.parse_args()
+
+    train = process_data(options.input, "train")
+    validation = process_data(options.input, "validation")
+    results = pd.concat([train, validation], axis=1)
+
+
+    results.to_csv(options.save_dataframe)
+    ax = sns.lineplot(x="EPOCH", y="LOSS", data=results['train'])
     plt.show()
