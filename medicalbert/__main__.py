@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
             path = os.path.join(results_path, checkpoint)
 
-            evaluator = Evaluator(classifier, results_path, defconfig)
+            evaluator = Evaluator(classifier, os.path.join(results_path, checkpoint), defconfig)
 
             evaluator.run(datareader.get_train(), "train")
             output = evaluator.run(datareader.get_validation(), "validation")

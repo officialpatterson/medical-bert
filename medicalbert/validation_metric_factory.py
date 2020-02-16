@@ -9,6 +9,7 @@ class ROCValidation:
         # As we only select on ROC we only compare use that metric
         roc_score = metrics[0]
 
+        print("This score is {} - current best is {}".format(roc_score, self.best_score))
         if roc_score >= self.best_score:
             self.best_score = roc_score
             self.best_checkpoint = checkpoint
