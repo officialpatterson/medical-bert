@@ -1,3 +1,3 @@
 #!/bin/bash
-python medicalbert/ --seed 1234 --experiment_name alsentzer5e5 --learning_rate 0.00005 --tokenizer /home/apatterson/pretrained_bert_tf/biobert_pretrain_output_disch_100000 --pretrained_model /home/apatterson/pretrained_bert_tf/biobert_pretrain_output_disch_100000 --train --eval --classifier bert-general;
-python medicalbert/ --seed 1234 --experiment_name alsentzer5e5 --learning_rate 0.00005 --tokenizer /home/apatterson/pretrained_bert_tf/biobert_pretrain_output_disch_100000 --pretrained_model /home/apatterson/pretrained_bert_tf/biobert_pretrain_output_disch_100000 --train --eval --classifier bert-general;
+python medicalbert/ --experiment_name alsentzer --learning_rate 0.00001 --train --eval --classifier bert-general --tokenizer /home/apatterson/pretrained_bert_tf/biobert_pretrain_output_disch_100000 --pretrained_model /home/apatterson/pretrained_bert_tf/biobert_pretrain_output_disch_100000 --epochs 10 --seed 1234;
+python medicalbert/ --experiment_name general --learning_rate 0.00001 --train --eval --classifier bert-general --epochs 10 --seed 1234;
