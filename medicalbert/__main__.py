@@ -68,7 +68,7 @@ if __name__ == "__main__":
         results_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results")
 
         # build the validator for choosing the checkpoint
-        validator = ValidationMetricFactory(defconfig).make_validator(defconfig['validation_metric'])
+        validator = ValidationMetricFactory().make_validator(defconfig['validation_metric'])
 
         # Loop over all the checkpoints, running evaluations on all them.
         for checkpoint in os.listdir(checkpoints_path):
