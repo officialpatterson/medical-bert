@@ -56,7 +56,7 @@ class ValidationMetricFactory:
         self._validators[name] = validator
 
     def make_validator(self, validator):
-        vd = self._datareaders.get(validator)
+        vd = self._validators.get(validator)
         if not vd:
             raise ValueError(format)
         return vd()
