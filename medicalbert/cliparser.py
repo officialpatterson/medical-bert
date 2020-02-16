@@ -38,6 +38,10 @@ def setup_parser():
                         default=None,
                         type=str,
                         help="name of training file")
+    parser.add_argument("--validation_metric",
+                        default=None,
+                        type=str,
+                        help="metric used to select the best validation checkpoint for testing.")
     parser.add_argument("--valid_data",
                         default=None,
                         type=str,

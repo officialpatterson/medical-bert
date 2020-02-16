@@ -21,5 +21,6 @@
   "datareader": "one-doc",
   "vocab_size": 30000,
   "embed_size": 100,
-  "num_layers": 12
+  "num_layers": 12,
+  "validation_metric": "roc"
 }

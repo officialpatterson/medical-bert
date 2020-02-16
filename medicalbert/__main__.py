@@ -8,6 +8,8 @@ from evaluator import Evaluator
 from cliparser import setup_parser
 from tokenizers.tokenizer_factory import TokenizerFactory
 
+from validation_metric_factory import ValidationMetricFactory
+
 
 def set_random_seeds(seed):
     random.seed(seed)
@@ -49,6 +51,7 @@ if __name__ == "__main__":
 
     datareader = dataReaderFactory.make_datareader(defconfig['datareader'], tokenizer)
 
+
     if args.train:
 
         # Load from checkpoint if we're using one (won't do anything if were not)
@@ -60,32 +63,32 @@ if __name__ == "__main__":
 
     if args.eval:
 
-        # Loop over all the checkpoints, running evaluations on all them.
+        # declare the paths here
         checkpoints_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "checkpoints")
+        results_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results")
 
-        best_loss = 0
-        best_checkpoint = None
+        # build the validator for choosing the checkpoint
+        validator = ValidationMetricFactory(defconfig).make_validator(defconfig['validation_metric'])
+
+        # Loop over all the checkpoints, running evaluations on all them.
         for checkpoint in os.listdir(checkpoints_path):
 
             # Load the checkpoint model
             classifier.load_from_checkpoint(os.path.join(checkpoints_path, checkpoint))
 
-            results_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results", checkpoint)
+            path = os.path.join(results_path, checkpoint)
 
             evaluator = Evaluator(classifier, results_path, defconfig)
 
             evaluator.run(datareader.get_train(), "train")
-            validation_loss = evaluator.run(datareader.get_validation(), "validation")
+            output = evaluator.run(datareader.get_validation(), "validation")
 
-            if validation_loss >= best_loss:
-                best_loss = validation_loss
-                best_checkpoint = checkpoint
+            validator.update(output, classifier, checkpoint)
 
         print("Running test Evaluation")
-        classifier.load_from_checkpoint(os.path.join(checkpoints_path, best_checkpoint))
-        test_result_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results")
 
-        evaluator = Evaluator(classifier, test_result_path, defconfig)
+        evaluator = Evaluator(classifier, results_path, defconfig)
 
-        evaluator.run(datareader.get_test(), "test" +"_" + best_checkpoint +"_" + str(best_loss))
+        test_result_dir = "test" +"_" + validator.get_checkpoint() +"_" + str(validator.get_score())
+        evaluator.run(datareader.get_test(), test_result_dir)
 
