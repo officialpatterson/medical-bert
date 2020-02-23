@@ -32,7 +32,7 @@ class ChunkedDataReader(AbstractDataReader):
         self.train = None
         self.valid = None
         self.test = None
-        self.num_sections = 10
+        self.num_sections = config['num_sections']
 
     @staticmethod
     def chunks(lst, n):
@@ -81,7 +81,7 @@ class ChunkedDataReader(AbstractDataReader):
 
             inputFeatureBuilder.add(section_feature)
 
-        inputFeatureBuilder.resize(10, self.convert_section_to_feature([0], label))
+        inputFeatureBuilder.resize(self.num_sections, self.convert_section_to_feature([0], label))
         assert len(inputFeatureBuilder.get()) == self.num_sections
 
         # We return the builder

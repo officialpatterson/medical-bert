@@ -70,6 +70,10 @@ def setup_parser():
                         default=None,
                         type=str,
                         help="pretrained model to train upon.")
+    parser.add_argument("--num_sections",
+                        default=None,
+                        type=str,
+                        help="chunks of text")
     parser.add_argument("--tokenizer",
                         default=None,
                         type=str,
