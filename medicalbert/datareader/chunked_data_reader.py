@@ -61,7 +61,6 @@ class ChunkedDataReader(AbstractDataReader):
         all_features = torch.tensor([f.get() for f in input_features], dtype=torch.long)
         all_label_ids = torch.tensor([f.get_label() for f in input_features], dtype=torch.long)
 
-        print(all_features.shape)
         td = TensorDataset(all_features, all_label_ids)
         return td
 
