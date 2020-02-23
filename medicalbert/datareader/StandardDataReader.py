@@ -1,4 +1,4 @@
-from datareader.datareader import AbstractDataReader
+from datareader.abstract_data_reader import AbstractDataReader
 
 
 class InputFeatures(object):
