@@ -1,13 +1,38 @@
 import torch
 from classifiers.classifier import Classifier
 from classifiers.bert_sequence_wrapper import BertSequenceWrapper
-from transformers import BertModel
+from torch import nn
+from transformers import BertPreTrainedModel, BertModel
+
+
+class BertForSequenceClassification(BertPreTrainedModel):
+    def __init__(self, config):
+        super(BertForSequenceClassification, self).__init__(config)
+        self.num_labels = config.num_labels
+
+        self.bert = BertModel(config)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+        self.init_weights()
+
+    def forward(self, input_ids=None, attention_mask=None, token_type_ids=None,
+                position_ids=None, head_mask=None, inputs_embeds=None, labels=None):
+
+        outputs = self.bert(input_ids,
+                            attention_mask=attention_mask,
+                            token_type_ids=token_type_ids,
+                            position_ids=position_ids,
+                            head_mask=head_mask,
+                            inputs_embeds=inputs_embeds)
+
+        pooled_output = outputs[1]
+
+        return self.dropout(pooled_output)
 
 
 class BertSequenceClassifier(Classifier):
     def __init__(self, config):
         self.config = config
-        baseModel = BertModel.from_pretrained(self.config['pretrained_model'])
+        baseModel = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
 
         self.model = BertSequenceWrapper(baseModel, 2)
 

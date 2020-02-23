@@ -24,7 +24,7 @@ class Classifier:
                     batch = tuple(t.to(device) for t in batch)
                     features, label_ids = batch
 
-                    loss =  self.model(features[0], labels=label_ids)[0]
+                    loss =  self.model(features, labels=label_ids)[0]
 
                     # Statistics
                     batche.append(loss.item())

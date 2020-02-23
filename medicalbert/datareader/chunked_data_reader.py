@@ -52,7 +52,6 @@ class ChunkedDataReader(AbstractDataReader):
 
     def convert_example_to_feature(self, example, label):
 
-        sections = []
         inputFeatureBuilder = InputFeatureBuilder(label)
 
         # tokenize the text into a list

@@ -16,14 +16,18 @@ class BertSequenceWrapper(nn.Module):
 
         self.linear = nn.Linear(1536, self.num_labels)
 
-    def forward(self, text, labels):
-        # We loop over all the sequences to get the bert representaions
-        pooled_layer_output = []
-        for i in range(len(text)):
-            bert_outputs = []
-            for j in range(len(text[i])):
-                bert_out = self.bert(text[i][j].unsqueeze(0))
+    def forward(self, batch, labels):
+        #text shape =[4, 2, 3, 512]->[batch, sections, features, numbers]
 
+        pooled_layer_output = []
+        for i in range(len(batch)):
+            bert_outputs = []
+            sections = batch[i]
+            for section in sections: #section -> [features, numbers]
+                section_input_ids = section[0]
+                bert_out = self.bert(section_input_ids.unsqueeze(0))
+
+                # bert out should be a 768-tensor
                 bert_outputs.append(bert_out)
 
             bs = torch.stack(bert_outputs).view(-1)
@@ -33,7 +37,7 @@ class BertSequenceWrapper(nn.Module):
             # Flatten the input so that we have a single dimension for all the bert pooled layer.
         pooled_layer_output = torch.stack(pooled_layer_output)
 
-        logits = self.linear(pooled_layer_output) #We only use the output of the last hidden layer.
+        logits = self.linear(pooled_layer_output)  # We only use the output of the last hidden layer.
 
         outputs = (logits,)  # add hidden states and attention if they are here
 
@@ -42,4 +46,5 @@ class BertSequenceWrapper(nn.Module):
             loss = loss_fct(logits, labels.view(-1))
             outputs = (loss,) + outputs
 
+        print("LOSS: {}".format(outputs[0]))
         return outputs
