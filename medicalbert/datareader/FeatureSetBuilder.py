@@ -18,7 +18,7 @@ class FeatureSetBuilder:
         # if the num sections isn't maxed we either need to pad out or cut down.
 
         while len(self.features) < num_sections:
-            self.features.append(func)
+            self.features.append(func.get_matrix())
 
         # Handle the case where we have too many sections - cut at the head
         if len(self.features) > num_sections:
