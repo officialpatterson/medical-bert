@@ -47,7 +47,7 @@ class ChunkedDataReader(AbstractDataReader):
 
         # Handle the case where we have too many sections - cut at the head
         if len(sections) > num_sections:
-            sections = tokens_a[-num_sections:]
+            sections = sections[-num_sections:]
 
         assert len(sections) == num_sections
 
