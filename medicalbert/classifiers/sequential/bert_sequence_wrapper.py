@@ -7,14 +7,14 @@ class BertSequenceWrapper(nn.Module):
 
     # AS input all our data is shaped so that it is (documents, segments)
     # that is, we have multiple segments per document.
-    def __init__(self, bert, labels):
+    def __init__(self, bert, labels, num_sections):
         super(BertSequenceWrapper, self).__init__()
 
         self.num_labels = labels
 
         self.bert = bert
 
-        self.linear = nn.Linear(1536, self.num_labels)
+        self.linear = nn.Linear(768*num_sections, self.num_labels)
 
     def forward(self, batch, labels):
         #text shape =[4, 2, 3, 512]->[batch, sections, features, numbers]

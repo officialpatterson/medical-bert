@@ -36,7 +36,7 @@ class BertSequenceClassifier(SequenceClassifier):
         self.config = config
         baseModel = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
 
-        self.model = BertSequenceWrapper(baseModel, 2)
+        self.model = BertSequenceWrapper(baseModel, 2, config['num_sections'])
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
