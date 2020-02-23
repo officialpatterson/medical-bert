@@ -19,21 +19,21 @@ class ChunkedDataReader(AbstractDataReader):
         self.train = None
         self.valid = None
         self.test = None
-
+        self.num_sections = 2
     @staticmethod
     def chunks(lst, n):
         """Yield successive n-sized chunks from lst."""
         for i in range(0, len(lst), n):
             yield lst[i:i + n]
 
-    def convert_example_to_feature(self, example, label, max_sequence_length, tokenizer, num_sections):
+    def convert_example_to_feature(self, example, label):
 
         sections = []
         # tokenize the text into a list
-        tokens_a = tokenizer.tokenize(example.text_a)
+        tokens_a = self.tokenizer.tokenize(example.text_a)
 
         # chunk the list of tkens
-        generator = self.chunks(tokens_a, max_sequence_length - 2)
+        generator = self.chunks(tokens_a, self.max_sequence_length - 2)
 
         for section in generator:
             # convert the section to a feature
@@ -42,14 +42,14 @@ class ChunkedDataReader(AbstractDataReader):
             sections.append(section_feature)
 
         # if the num sections isn't maxed we either need to pad out or cut down.
-        if len(sections) < num_sections:
+        if len(sections) < self.num_sections:
             sections.append(self.convert_section_to_feature([0], label))
 
         # Handle the case where we have too many sections - cut at the head
-        if len(sections) > num_sections:
-            sections = sections[-num_sections:]
+        if len(sections) > self.num_sections:
+            sections = sections[-self.num_sections:]
 
-        assert len(sections) == num_sections
+        assert len(sections) == self.num_sections
 
         return sections
 
