@@ -1,4 +1,4 @@
-from datareader.datareader import DataReader
+from datareader.datareader import AbstractDataReader
 
 
 class InputFeatures(object):
@@ -11,7 +11,7 @@ class InputFeatures(object):
         self.label_id = label_id
 
 
-class StandardDataReader(DataReader):
+class StandardDataReader(AbstractDataReader):
 
     def __init__(self, config, tokenizer):
         self.tokenizer = tokenizer
