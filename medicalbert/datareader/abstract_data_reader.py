@@ -3,7 +3,7 @@
 import logging, os, torch, gcsfs
 from pathlib import Path
 import pandas as pd
-from torch.utils.data import TensorDataset, DataLoader, RandomSampler
+from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
 
 #We suppress logging below error for this library, otherwise seq. longer than 512 will spam the console.
@@ -29,7 +29,7 @@ class InputExample(object):
         self.text_b = text_b
         self.label = label
 
-class DataReader:
+class AbstractDataReader:
 
     def __init__(self, config, tokenizer):
         self.tokenizer = tokenizer

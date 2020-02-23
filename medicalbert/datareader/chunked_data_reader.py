@@ -1,5 +1,4 @@
-from datareader.datareader import DataReader
-
+from medicalbert.datareader.abstract_data_reader import AbstractDataReader
 
 class InputFeatures(object):
     """A single set of features of data."""
@@ -11,7 +10,7 @@ class InputFeatures(object):
         self.label_id = label_id
 
 
-class ChunkedDataReader(DataReader):
+class ChunkedDataReader(AbstractDataReader):
 
     def __init__(self, config, tokenizer):
         self.tokenizer = tokenizer
@@ -21,19 +20,20 @@ class ChunkedDataReader(DataReader):
         self.valid = None
         self.test = None
 
-    def chunks(self, lst, n):
+    @staticmethod
+    def chunks(lst, n):
         """Yield successive n-sized chunks from lst."""
         for i in range(0, len(lst), n):
             yield lst[i:i + n]
 
-    def convert_example_to_feature(self, example, label, max_seq_length, tokenizer, num_sections):
+    def convert_example_to_feature(self, example, label, max_sequence_length, tokenizer, num_sections):
 
         sections = []
         # tokenize the text into a list
         tokens_a = tokenizer.tokenize(example.text_a)
 
         # chunk the list of tkens
-        generator = self.chunks(tokens_a, max_seq_length - 2)
+        generator = self.chunks(tokens_a, max_sequence_length - 2)
 
         for section in generator:
             # convert the section to a feature
@@ -76,13 +76,13 @@ class ChunkedDataReader(DataReader):
         input_mask = [1] * len(input_ids)
 
         # Zero-pad up to the sequence length.
-        while len(input_ids) < self.max_seq_length:
+        while len(input_ids) < self.max_sequence_length:
             input_ids.append(0)
             input_mask.append(0)
             segment_ids.append(0)
 
-        assert len(input_ids) == self.max_seq_length
-        assert len(input_mask) == self.max_seq_length
-        assert len(segment_ids) == self.max_seq_length
+        assert len(input_ids) == self.max_sequence_length
+        assert len(input_mask) == self.max_sequence_length
+        assert len(segment_ids) == self.max_sequence_length
 
         return InputFeatures(input_ids, input_mask, segment_ids, label)
