@@ -22,9 +22,9 @@ class Classifier:
                 for step, batch in enumerate(t):
 
                     batch = tuple(t.to(device) for t in batch)
-                    features, label_ids = batch
+                    input_ids, input_mask, segment_ids, label_ids = batch
 
-                    loss =  self.model(features, labels=label_ids)[0]
+                    loss =  self.model(input_ids, labels=label_ids)[0]
 
                     # Statistics
                     batche.append(loss.item())
@@ -56,9 +56,8 @@ class Classifier:
 
         losses.to_csv(os.path.join(self.config['output_dir'], self.config['experiment_name'], "batch_loss.csv"))
 
-    def set_eval_mode(self, device):
+    def set_eval_mode(self):
         self.model.eval()
-        self.model.to(device)
 
     def load_from_checkpoint(self):
 

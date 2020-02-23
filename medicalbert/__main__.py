@@ -4,11 +4,12 @@ from config import get_configuration
 import numpy as np
 from classifiers.classifier_factory import ClassifierFactory
 from datareader.data_reader_factory import DataReaderFactory
-from evaluator import Evaluator
 from cliparser import setup_parser
+from evaluator.evaluator_factory import EvaluatorFactory
+from evaluator.standard_evaluator import StandardEvaluator
 from tokenizers.tokenizer_factory import TokenizerFactory
 
-from validation_metric_factory import ValidationMetricFactory
+from evaluator.validation_metric_factory import ValidationMetricFactory
 
 
 def set_random_seeds(seed):
@@ -16,6 +17,14 @@ def set_random_seeds(seed):
     np.random.seed(seed)
     torch.manual_seed(seed)
 
+def save_config(defconfig):
+    config_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], 'config.json')
+    if not os.path.exists(
+            os.path.join(defconfig['output_dir'], defconfig['experiment_name'])):
+        os.makedirs(os.path.join(defconfig['output_dir'], defconfig['experiment_name']))
+
+    with open(config_path, 'w') as f:
+        json.dump(defconfig, f)
 
 if __name__ == "__main__":
 
@@ -24,14 +33,7 @@ if __name__ == "__main__":
     defconfig = get_configuration(args)
     print(defconfig)
 
-    #save the config values inot the experiment directory for record-keeping
-    config_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], 'config.json')
-    if not os.path.exists(
-            os.path.join(defconfig['output_dir'], defconfig['experiment_name'])):
-        os.makedirs(os.path.join(defconfig['output_dir'], defconfig['experiment_name']))
-
-    with open(config_path, 'w') as f:
-        json.dump(defconfig, f)
+    save_config(defconfig)
 
     logging.info("Number of GPUS: {}".format(torch.cuda.device_count()))
 
@@ -51,7 +53,6 @@ if __name__ == "__main__":
 
     datareader = dataReaderFactory.make_datareader(defconfig['datareader'], tokenizer)
 
-
     if args.train:
 
         # Load from checkpoint if we're using one (won't do anything if were not)
@@ -63,32 +64,20 @@ if __name__ == "__main__":
 
     if args.eval:
 
-        # declare the paths here
-        checkpoints_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "checkpoints")
+        # setup the correct validator
         results_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "results")
-
-        # build the validator for choosing the checkpoint
         validator = ValidationMetricFactory().make_validator(defconfig['validation_metric'])
 
+        evaluator = EvaluatorFactory().make_evaluator(defconfig['evaluator'], results_path, defconfig, datareader, validator)
+
+        checkpoints_path = os.path.join(defconfig['output_dir'], defconfig['experiment_name'], "checkpoints")
         # Loop over all the checkpoints, running evaluations on all them.
         for checkpoint in os.listdir(checkpoints_path):
 
             # Load the checkpoint model
             classifier.load_from_checkpoint(os.path.join(checkpoints_path, checkpoint))
 
-            path = os.path.join(results_path, checkpoint)
+            evaluator.go(classifier, checkpoint)
 
-            evaluator = Evaluator(classifier, os.path.join(results_path, checkpoint), defconfig)
-
-            evaluator.run(datareader.get_train(), "train")
-            output = evaluator.run(datareader.get_validation(), "validation")
-
-            validator.update(output, classifier, checkpoint)
-
-        print("Running test Evaluation")
-
-        evaluator = Evaluator(classifier, results_path, defconfig)
-
-        test_result_dir = "test" +"_" + validator.get_checkpoint() +"_" + str(validator.get_score())
-        evaluator.run(datareader.get_test(), test_result_dir)
+        evaluator.test()
 

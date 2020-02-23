@@ -1,15 +1,15 @@
 import torch
-from classifiers.classifier import Classifier
-from classifiers.bert_head import BertMeanPooling
+from classifiers.standard.classifier import Classifier
+from classifiers.standard.bert_head import BERTFCHead
 from torch import nn
 from torch.nn import CrossEntropyLoss
-from transformers import BertPreTrainedModel, BertModel
+from transformers import BertPreTrainedModel
 
 
-class BertMeanPoolClassifier(Classifier):
+class BertConcatClassifier(Classifier):
     def __init__(self, config):
         self.config = config
-        self.model = BertModelMeanPooling.from_pretrained(self.config['pretrained_model'])
+        self.model = BertConcatModel.from_pretrained(self.config['pretrained_model'])
 
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
@@ -24,17 +24,15 @@ class BertMeanPoolClassifier(Classifier):
 # And pool that.
 # To make it simple, we take the BertModel, and replace the Pooler with our own.
 ##
-
-
-class BertModelMeanPooling(BertPreTrainedModel):
+class BertConcatModel(BertPreTrainedModel):
     def __init__(self, config):
-        super(BertModelMeanPooling, self).__init__(config)
+        super(BertConcatModel, self).__init__(config)
         self.num_labels = config.num_labels
 
-        self.bert = BertModel(config)
+        self.bert = BERTFCHead(config)
 
         # remove the pooling layer and replace with our own
-        self.bert.pooler = BertMeanPooling(config)
+        self.bert.pooler = BERTFCHead(config)
 
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.classifier = nn.Linear(config.hidden_size, self.config.num_labels)
@@ -51,11 +49,14 @@ class BertModelMeanPooling(BertPreTrainedModel):
                             head_mask=head_mask,
                             inputs_embeds=inputs_embeds)
 
+        print("Shape: {}".format(outputs[1].shape))
         pooled_output = outputs[1]
+
 
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
         logits = self.head(logits)
+
         outputs = (logits,) + outputs[2:]  # add hidden states and attention if they are here
 
         if labels is not None:

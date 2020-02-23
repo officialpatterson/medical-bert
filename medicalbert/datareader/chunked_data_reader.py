@@ -1,4 +1,14 @@
-from datareader.abstract_data_reader import AbstractDataReader
+import logging
+import os
+
+import pandas as pd
+import torch
+from torch.utils.data import TensorDataset
+from tqdm import tqdm
+
+from datareader.FeatureSetBuilder import FeatureSetBuilder
+from datareader.abstract_data_reader import AbstractDataReader, InputExample
+
 
 class InputFeatures(object):
     """A single set of features of data."""
@@ -12,26 +22,6 @@ class InputFeatures(object):
     def get_matrix(self):
         return [self.input_ids, self.input_mask, self.segment_ids]
 
-
-class InputFeatureBuilder:
-    def __init__(self, label):
-        self.features = []
-        self.label = label
-    def add(self, inputFeature):
-        self.features.append(inputFeature.get_matrix())
-
-    def resize(self, num_sections, label):
-        # if the num sections isn't maxed we either need to pad out or cut down.
-        if len(self.features) < num_sections:
-            self.features.append(self.convert_section_to_feature([0], label))
-
-        # Handle the case where we have too many sections - cut at the head
-        if len(self.features) > num_sections:
-            self.features = self.features[-num_sections:]
-    def get(self):
-        return self.features
-    def get_label(self):
-        return self.label
 
 class ChunkedDataReader(AbstractDataReader):
 
@@ -50,14 +40,40 @@ class ChunkedDataReader(AbstractDataReader):
         for i in range(0, len(lst), n):
             yield lst[i:i + n]
 
+    def build_fresh_dataset(self, dataset):
+        logging.info("Building fresh dataset...")
+
+        df = pd.read_csv(os.path.join(self.config['data_dir'], dataset))
+
+        input_features = []
+        df['text'] = df['text'].str.replace(r'\t', ' ', regex=True)
+        df['text'] = df['text'].str.replace(r'\n', ' ', regex=True)
+        df['text'] = df['text'].str.lower()
+
+        for _, row in tqdm(df.iterrows(), total=df.shape[0]):
+            text = row['text']
+            lbl = row[self.config['target']]
+
+            input_example = InputExample(None, text, None, self.config['target'])
+            feature = self.convert_example_to_feature(input_example, lbl)
+            input_features.append(feature)
+
+        all_features = torch.tensor([f.get() for f in input_features], dtype=torch.long)
+        all_label_ids = torch.tensor([f.get_label() for f in input_features], dtype=torch.long)
+
+        print(all_features.shape)
+        td = TensorDataset(all_features, all_label_ids)
+        return td
+
     def convert_example_to_feature(self, example, label):
 
-        inputFeatureBuilder = InputFeatureBuilder(label)
+        # create a new feature set builder for this example
+        inputFeatureBuilder = FeatureSetBuilder(label)
 
         # tokenize the text into a list
         tokens_a = self.tokenizer.tokenize(example.text_a)
 
-        # chunk the list of tkens
+        # chunk the list of tokens
         generator = self.chunks(tokens_a, self.max_sequence_length - 2)
 
         for section in generator:
@@ -74,7 +90,7 @@ class ChunkedDataReader(AbstractDataReader):
 
     def convert_section_to_feature(self, tokens_a, label):
 
-        #Truncate the section if needed
+        # Truncate the section if needed
         if len(tokens_a) > (self.max_sequence_length - 2):
             tokens_a = tokens_a[-(self.max_sequence_length - 2):]
 

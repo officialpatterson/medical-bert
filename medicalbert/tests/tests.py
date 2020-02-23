@@ -1,5 +1,4 @@
 import unittest
-
 from transformers import BertTokenizer
 
 
@@ -33,7 +32,24 @@ class TestChunkedDataReader(unittest.TestCase):
         actual = inputFeature.input_ids[11:]
         self.assertTrue(expected, actual)
 
-    def test_convert_section_to_feature(self):
+    def test_convert_section_to_feature_short(self):
+        from medicalbert.datareader.chunked_data_reader import ChunkedDataReader
+
+        # Create a chunkedDataReader
+        tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+        config = {"max_sequence_length": 10}
+        cdr = ChunkedDataReader(config, tokenizer)
+        # create a test string that is shorter than the max sequence length
+        test_input = "Hi My name is Andrew"
+
+        tokens = tokenizer.tokenize(test_input)
+
+        # convert to a feature
+        inputFeature = cdr.convert_section_to_feature(tokens, "1")
+
+        self.assertInputFeatureIsValid(inputFeature, 6)
+
+    def test_convert_section_to_feature_long(self):
         from medicalbert.datareader.chunked_data_reader import ChunkedDataReader
 
         # Create a chunkedDataReader
@@ -51,16 +67,6 @@ class TestChunkedDataReader(unittest.TestCase):
         inputFeature = cdr.convert_section_to_feature(tokens, "1")
 
         self.assertInputFeatureIsValid(inputFeature, 9)
-
-        # create a test string that is shorter than the max sequence length
-        test_input = "Hi My name is Andrew"
-
-        tokens = tokenizer.tokenize(test_input)
-
-        # convert to a feature
-        inputFeature = cdr.convert_section_to_feature(tokens, "1")
-
-        self.assertInputFeatureIsValid(inputFeature, 6)
 
 if __name__ == '__main__':
     unittest.main()

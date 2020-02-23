@@ -1,37 +1,41 @@
 import torch
-from classifiers.bert_model import BertForSequenceClassification
-from classifiers.classifier import Classifier
-from classifiers.util import deleteEncodingLayers
+from classifiers.standard.classifier import Classifier
+from classifiers.standard.bert_head import BertMeanPooling
 from torch import nn
 from torch.nn import CrossEntropyLoss
 from transformers import BertPreTrainedModel, BertModel
 
 
-class BertRandomClassifier(Classifier):
+class BertMeanPoolClassifier(Classifier):
     def __init__(self, config):
         self.config = config
-        self.model = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])
+        self.model = BertModelMeanPooling.from_pretrained(self.config['pretrained_model'])
 
-        # We cheat the framework here - we make a new model base o
-        self.model =  BertForSequenceClassification(self.model.config)
-
-        # here, we can do some layer removal if we want to
-        self.model = deleteEncodingLayers(self.model, config['num_layers'])
-
-        # setup the optimizer
         self.optimizer = torch.optim.Adam(self.model.parameters(), self.config['learning_rate'])
 
+        # here, we can do some layer removal if we want to
         self.epochs = 0
 
         print(self.model)
 
+##
+# In this model,
+# we take the final hidden state of all tokens apart from CLS and SEP.
+# And pool that.
+# To make it simple, we take the BertModel, and replace the Pooler with our own.
+##
 
-class BertForSequenceClassification(BertPreTrainedModel):
+
+class BertModelMeanPooling(BertPreTrainedModel):
     def __init__(self, config):
-        super(BertForSequenceClassification, self).__init__(config)
+        super(BertModelMeanPooling, self).__init__(config)
         self.num_labels = config.num_labels
 
         self.bert = BertModel(config)
+
+        # remove the pooling layer and replace with our own
+        self.bert.pooler = BertMeanPooling(config)
+
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
         self.classifier = nn.Linear(config.hidden_size, self.config.num_labels)
         self.head = nn.Softmax(dim=1)
@@ -62,4 +66,3 @@ class BertForSequenceClassification(BertPreTrainedModel):
             outputs = (loss,) + outputs
 
         return outputs  # (loss), logits, (hidden_states), (attentions)
-

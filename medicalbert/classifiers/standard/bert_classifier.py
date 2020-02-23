@@ -1,6 +1,6 @@
 import torch
-from classifiers.bert_model import BertForSequenceClassification
-from classifiers.classifier import Classifier
+from classifiers.standard.bert_model import BertForSequenceClassification
+from classifiers.standard.classifier import Classifier
 
 
 class BertGeneralClassifier(Classifier):

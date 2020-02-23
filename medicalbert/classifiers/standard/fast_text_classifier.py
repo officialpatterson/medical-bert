@@ -1,5 +1,5 @@
 import torch
-from classifiers.classifier import Classifier
+from classifiers.standard.classifier import Classifier
 from torch import nn
 from torch.nn import CrossEntropyLoss
 

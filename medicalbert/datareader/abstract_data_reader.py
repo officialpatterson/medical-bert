@@ -78,30 +78,6 @@ class AbstractDataReader:
     def econvert_example_to_feature(self, input_example, lbl):
         pass
 
-    def build_fresh_dataset(self, dataset):
-        logging.info("Building fresh dataset...")
-
-        df = pd.read_csv(os.path.join(self.config['data_dir'], dataset))
-
-        input_features = []
-        df['text'] = df['text'].str.replace(r'\t', ' ', regex=True)
-        df['text'] = df['text'].str.replace(r'\n', ' ', regex=True)
-        df['text'] = df['text'].str.lower()
-
-        for _, row in tqdm(df.iterrows(), total=df.shape[0]):
-            text = row['text']
-            lbl = row[self.config['target']]
-
-            input_example = InputExample(None, text, None, self.config['target'])
-            feature = self.convert_example_to_feature(input_example, lbl)
-            input_features.append(feature)
-
-        all_features = torch.tensor([f.get() for f in input_features], dtype=torch.long)
-        all_label_ids = torch.tensor([f.get_label() for f in input_features], dtype=torch.long)
-
-        print(all_features.shape)
-        td = TensorDataset(all_features, all_label_ids)
-        return td
 
     def save_dataset(self, dataset, tensorDataset):
         path = os.path.join(self.config['output_dir'], self.config['experiment_name'])

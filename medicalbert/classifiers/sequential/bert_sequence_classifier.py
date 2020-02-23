@@ -1,6 +1,8 @@
 import torch
-from classifiers.classifier import Classifier
-from classifiers.bert_sequence_wrapper import BertSequenceWrapper
+
+from classifiers.sequential.sequence_classifier import SequenceClassifier
+from classifiers.standard.classifier import Classifier
+from classifiers.sequential.bert_sequence_wrapper import BertSequenceWrapper
 from torch import nn
 from transformers import BertPreTrainedModel, BertModel
 
@@ -29,7 +31,7 @@ class BertForSequenceClassification(BertPreTrainedModel):
         return self.dropout(pooled_output)
 
 
-class BertSequenceClassifier(Classifier):
+class BertSequenceClassifier(SequenceClassifier):
     def __init__(self, config):
         self.config = config
         baseModel = BertForSequenceClassification.from_pretrained(self.config['pretrained_model'])

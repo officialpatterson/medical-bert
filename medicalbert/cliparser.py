@@ -46,6 +46,10 @@ def setup_parser():
                         default=None,
                         type=str,
                         help="name of validation file")
+    parser.add_argument("--evaluator",
+                        default=None,
+                        type=str,
+                        help="evaluation class to use")
     parser.add_argument("--seed",
                         default=None,
                         type=int,
