@@ -44,8 +44,7 @@ class Evaluator:
         all_losses = None
         for step, batch in enumerate(tqdm(data, desc="evaluating")):
             batch = tuple(t.to(device) for t in batch)
-            input_ids, input_mask, segment_ids, label_ids = batch
-
+            features, label_ids = batch
             with torch.no_grad():
                 out = self.model(input_ids=input_ids, token_type_ids = segment_ids, attention_mask=input_mask, labels=label_ids)
                 loss = out[0]
