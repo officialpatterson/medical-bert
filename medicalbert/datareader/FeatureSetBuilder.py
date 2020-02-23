@@ -11,7 +11,7 @@ class FeatureSetBuilder:
         self.features = []
         self.label = label
 
-    def add_feature(self, input_feature):
+    def add(self, input_feature):
         self.features.append(input_feature.get_matrix())
 
     def resize(self, num_sections):
