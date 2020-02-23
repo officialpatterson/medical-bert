@@ -1,11 +1,10 @@
 import torch
 from classifiers.bert_model import BertForSequenceClassification
 from classifiers.classifier import Classifier
+from classifiers.util import deleteEncodingLayers
 from torch import nn
 from torch.nn import CrossEntropyLoss
 from transformers import BertPreTrainedModel, BertModel
-
-from medicalbert.classifiers.util import deleteEncodingLayers
 
 
 class BertRandomClassifier(Classifier):
