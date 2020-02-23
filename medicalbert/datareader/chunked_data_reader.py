@@ -1,4 +1,4 @@
-from medicalbert.datareader.abstract_data_reader import AbstractDataReader
+from datareader.abstract_data_reader import AbstractDataReader
 
 class InputFeatures(object):
     """A single set of features of data."""
