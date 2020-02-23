@@ -96,8 +96,8 @@ class AbstractDataReader:
             feature = self.convert_example_to_feature(input_example, lbl)
             input_features.append(feature)
 
-        all_features = torch.tensor([f for f in input_features], dtype=torch.long)
-        all_label_ids = torch.tensor([f.label_id for f in input_features], dtype=torch.long)
+        all_features = torch.tensor([f.get() for f in input_features], dtype=torch.long)
+        all_label_ids = torch.tensor([f.get_label() for f in input_features], dtype=torch.long)
 
         td = TensorDataset(all_features, all_label_ids)
         return td

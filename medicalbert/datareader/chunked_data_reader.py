@@ -13,6 +13,26 @@ class InputFeatures(object):
         return [self.input_ids, self.input_mask, self.segment_ids]
 
 
+class InputFeatureBuilder:
+    def __init__(self, label):
+        self.features = []
+        self.label = label
+    def add(self, inputFeature):
+        self.features.append(inputFeature.get_matrix())
+
+    def resize(self, num_sections, label):
+        # if the num sections isn't maxed we either need to pad out or cut down.
+        if len(self.features) < num_sections:
+            self.features.append(self.convert_section_to_feature([0], label))
+
+        # Handle the case where we have too many sections - cut at the head
+        if len(self.features) > num_sections:
+            self.features = self.features[-num_sections:]
+    def get(self):
+        return self.features
+    def get_label(self):
+        return self.label
+
 class ChunkedDataReader(AbstractDataReader):
 
     def __init__(self, config, tokenizer):
@@ -23,6 +43,7 @@ class ChunkedDataReader(AbstractDataReader):
         self.valid = None
         self.test = None
         self.num_sections = 2
+
     @staticmethod
     def chunks(lst, n):
         """Yield successive n-sized chunks from lst."""
@@ -32,6 +53,8 @@ class ChunkedDataReader(AbstractDataReader):
     def convert_example_to_feature(self, example, label):
 
         sections = []
+        inputFeatureBuilder = InputFeatureBuilder()
+
         # tokenize the text into a list
         tokens_a = self.tokenizer.tokenize(example.text_a)
 
@@ -42,20 +65,13 @@ class ChunkedDataReader(AbstractDataReader):
             # convert the section to a feature
             section_feature = self.convert_section_to_feature(section, label)
 
-            sections.append(section_feature.get_matrix())
+            inputFeatureBuilder.add(section_feature)
 
-        # if the num sections isn't maxed we either need to pad out or cut down.
-        if len(sections) < self.num_sections:
-            sections.append(self.convert_section_to_feature([0], label))
+        inputFeatureBuilder.resize(2, label)
+        assert len(inputFeatureBuilder.get()) == self.num_sections
 
-        # Handle the case where we have too many sections - cut at the head
-        if len(sections) > self.num_sections:
-            sections = sections[-self.num_sections:]
-
-        assert len(sections) == self.num_sections
-
-        #we return a list of lists i.e. [0][0] is the first section of input ids, [1][0] is the second
-        return sections
+        # We return the builder
+        return inputFeatureBuilder
 
     def convert_section_to_feature(self, tokens_a, label):
 
