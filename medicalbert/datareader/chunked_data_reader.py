@@ -3,7 +3,7 @@
 import logging, os, torch, gcsfs
 from pathlib import Path
 import pandas as pd
-from medicalbert.datareader.datareader import DataReader
+from datareader.datareader import DataReader
 from torch.utils.data import TensorDataset
 from tqdm import tqdm
 
