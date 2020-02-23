@@ -42,7 +42,7 @@ class ChunkedDataReader(AbstractDataReader):
             # convert the section to a feature
             section_feature = self.convert_section_to_feature(section, label)
 
-            sections.append(section_feature)
+            sections.append(section_feature.get_matrix())
 
         # if the num sections isn't maxed we either need to pad out or cut down.
         if len(sections) < self.num_sections:
@@ -54,6 +54,7 @@ class ChunkedDataReader(AbstractDataReader):
 
         assert len(sections) == self.num_sections
 
+        #we return a list of lists i.e. [0][0] is the first section of input ids, [1][0] is the second
         return sections
 
     def convert_section_to_feature(self, tokens_a, label):
