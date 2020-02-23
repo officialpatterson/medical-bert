@@ -1,9 +1,6 @@
 import torch
 from classifiers.bert_model import BertForSequenceClassification
 from classifiers.classifier import Classifier
-from torch import nn
-from torch.nn import CrossEntropyLoss
-from transformers import BertPreTrainedModel, BertModel
 
 
 class BertGeneralClassifier(Classifier):
