@@ -82,7 +82,7 @@ class ChunkedDataReader(AbstractDataReader):
 
             inputFeatureBuilder.add(section_feature)
 
-        inputFeatureBuilder.resize(2, label)
+        inputFeatureBuilder.resize(2)
         assert len(inputFeatureBuilder.get()) == self.num_sections
 
         # We return the builder
