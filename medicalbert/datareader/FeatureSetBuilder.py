@@ -25,6 +25,7 @@ class FeatureSetBuilder:
 
     #returns all features
     def get(self):
+        print(len(self.features))
         return self.features
 
     def get_feature(self, feature_index):
