@@ -159,7 +159,7 @@ class ChunkedDataReader(DataReader):
             lbl = row[self.config['target']]
 
             input_example = InputExample(None, text, None, self.config['target'])
-            feature = convert_example_to_feature(input_example, lbl, self.config['max_sequence_length'], self.tokenizer)
+            feature = convert_example_to_feature(input_example, lbl, self.config['max_sequence_length'], self.tokenizer, 2)
             input_features.append(feature)
 
         all_input_ids = torch.tensor([f.input_ids for f in input_features], dtype=torch.long)
