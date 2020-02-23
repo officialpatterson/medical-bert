@@ -17,6 +17,8 @@ class FeatureSetBuilder:
     def resize(self, num_sections, func):
         # if the num sections isn't maxed we either need to pad out or cut down.
         if len(self.features) < num_sections:
+            print("appending")
+            print(func)
             self.features.append(func)
 
         # Handle the case where we have too many sections - cut at the head
