@@ -32,7 +32,7 @@ class ChunkedDataReader(AbstractDataReader):
         self.train = None
         self.valid = None
         self.test = None
-        self.num_sections = 2
+        self.num_sections = 10
 
     @staticmethod
     def chunks(lst, n):
