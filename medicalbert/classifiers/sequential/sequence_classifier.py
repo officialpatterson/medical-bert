@@ -24,8 +24,6 @@ class SequenceClassifier(Classifier):
 
                     loss =  self.model(features, labels=label_ids)[0]
 
-                    # Statistics
-                    batche.append(loss.item())
 
                     loss = loss / self.config['gradient_accumulation_steps']
 
@@ -34,7 +32,6 @@ class SequenceClassifier(Classifier):
                     tr_loss += loss.item()
 
                     if (step + 1) % self.config['gradient_accumulation_steps'] == 0:
-                        batch_losses.append(torch.mean(batche))
                         # Update the model gradients
                         #torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
                         self.optimizer.step()
