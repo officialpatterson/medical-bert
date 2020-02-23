@@ -28,7 +28,7 @@ class SequenceEvaluator(StandardEvaluator):
 
         for step, batch in enumerate(tqdm(data, desc="evaluating")):
             batch = tuple(t.to(device) for t in batch)
-            features = batch
+            features, label_ids = batch
 
             with torch.no_grad():
                 out = classifier.model(features, labels=label_ids)
