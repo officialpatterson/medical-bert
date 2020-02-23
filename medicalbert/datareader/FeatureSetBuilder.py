@@ -14,10 +14,10 @@ class FeatureSetBuilder:
     def add(self, input_feature):
         self.features.append(input_feature.get_matrix())
 
-    def resize(self, num_sections):
+    def resize(self, num_sections, func):
         # if the num sections isn't maxed we either need to pad out or cut down.
         if len(self.features) < num_sections:
-            self.features.append(self.convert_section_to_feature([0], self.label))
+            self.features.append(func)
 
         # Handle the case where we have too many sections - cut at the head
         if len(self.features) > num_sections:
