@@ -75,7 +75,7 @@ class AbstractDataReader:
             return None
 
     # Abstract function - how we convert examples to features should be left to the subclasses
-    def convert_example_to_feature(self, input_example, lbl):
+    def econvert_example_to_feature(self, input_example, lbl):
         pass
 
     def build_fresh_dataset(self, dataset):
@@ -96,12 +96,10 @@ class AbstractDataReader:
             feature = self.convert_example_to_feature(input_example, lbl)
             input_features.append(feature)
 
-        all_input_ids = torch.tensor([f.input_ids for f in input_features], dtype=torch.long)
-        all_input_mask = torch.tensor([f.input_mask for f in input_features], dtype=torch.long)
-        all_segment_ids = torch.tensor([f.segment_ids for f in input_features], dtype=torch.long)
+        all_features = torch.tensor([f.get_matrix() for f in input_features], dtype=torch.long)
         all_label_ids = torch.tensor([f.label_id for f in input_features], dtype=torch.long)
 
-        td = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
+        td = TensorDataset(all_features, all_label_ids)
         return td
 
     def save_dataset(self, dataset, tensorDataset):

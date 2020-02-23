@@ -9,6 +9,9 @@ class InputFeatures(object):
         self.segment_ids = segment_ids
         self.label_id = label_id
 
+    def get_matrix(self):
+        return [self.input_ids, self.input_mask, self.segment_ids]
+
 
 class ChunkedDataReader(AbstractDataReader):
 
