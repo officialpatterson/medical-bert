@@ -63,7 +63,7 @@ class StandardEvaluator:
 
     @staticmethod
     def condense_output(self, all_logits, all_labels):
-        summary = self.summarise(all_logits, all_labels)
+        summary = StandardEvaluator.summarise(all_logits, all_labels)
 
         output = StandardEvaluator.make_output_dataframe(all_logits, all_labels)
 
@@ -112,7 +112,7 @@ class StandardEvaluator:
                 all_labels = labels
                 all_logits = logits
 
-        summary, output = self.condense_output(all_logits, all_labels)
+        summary, output = StandardEvaluator.condense_output(all_logits, all_labels)
 
         self.save(summary, output, output_dir)
 

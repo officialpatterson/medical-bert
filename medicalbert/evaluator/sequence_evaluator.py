@@ -45,7 +45,7 @@ class SequenceEvaluator(StandardEvaluator):
                 all_labels = labels
                 all_logits = logits
 
-        summary, output = self.condense_output(all_logits, all_labels)
+        summary, output = StandardEvaluator.condense_output(all_logits, all_labels)
 
         self.save(summary, output, output_dir)
 

@@ -46,5 +46,4 @@ class BertSequenceWrapper(nn.Module):
             loss = loss_fct(logits, labels.view(-1))
             outputs = (loss,) + outputs
 
-        print("LOSS: {}".format(outputs[0]))
         return outputs
