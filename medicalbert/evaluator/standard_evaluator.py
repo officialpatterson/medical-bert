@@ -62,7 +62,7 @@ class StandardEvaluator:
         return pd.DataFrame([summary])
 
     @staticmethod
-    def condense_output(self, all_logits, all_labels):
+    def condense_output(all_logits, all_labels):
         summary = StandardEvaluator.summarise(all_logits, all_labels)
 
         output = StandardEvaluator.make_output_dataframe(all_logits, all_labels)
