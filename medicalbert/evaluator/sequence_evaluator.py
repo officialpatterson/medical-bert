@@ -1,4 +1,5 @@
 import logging
+import os
 
 import numpy as np
 import pandas as pd
@@ -15,7 +16,7 @@ class SequenceEvaluator(StandardEvaluator):
         self.config = config
         self.model_selector = best_model_selector
 
-    def run(self, classifier, classifier_name, data):
+    def run(self, classifier, classifier_name, data, output_dir):
         logging.info("Running Evaluations")
         # Put the classifier in training mode.
         device = torch.device(self.config['device'])
@@ -44,8 +45,8 @@ class SequenceEvaluator(StandardEvaluator):
                 all_labels = labels
                 all_logits = logits
 
-        summary = self.summarise(all_logits, all_labels)
+        summary, output = self.condense_output(all_logits, all_labels)
 
-        self.save(pd.DataFrame([summary]), all_logits, all_labels, self.result_dir, classifier_name)
+        self.save(summary, output, output_dir)
 
         return summary

@@ -18,8 +18,10 @@ class StandardEvaluator:
 
     # This method will run a classifier against a train and validation set
     def go(self, classifier, classifier_name):
-        self.run(classifier, classifier_name, self.datareader.get_train())
-        results = self.run(classifier, classifier_name, self.datareader.get_validation())
+        train_path = os.path.join(self.results_path, classifier_name, "train")
+        valid_path = os.path.join(self.results_path, classifier_name, "validation")
+        self.run(classifier, classifier_name, self.datareader.get_train(), train_path)
+        results = self.run(classifier, classifier_name, self.datareader.get_validation(), valid_path)
 
         self.model_selector.update(results, classifier, classifier_name)
 
@@ -32,26 +34,20 @@ class StandardEvaluator:
 
         self.run(classifier, test_result_dir, self.datareader.get_test())
 
-    # We save all the data in a 1er here.
-    def save(self, summary, logits, labels, path, name):
-        path = os.path.join(path, name)
-
-        # if we are using a local filesystem we'll need to create the dirs, otherwise we dont.
-        if path[:2] != "gs":
-            if not os.path.exists(path):
-                os.makedirs(path)
-
-        summary.to_csv(os.path.join(path, 'summary.csv'))
-
+    # functions for formatting the output into a human readible format.
+    @staticmethod
+    def make_output_dataframe(logits, labels):
         first_logit = pd.Series(logits[:, 0])
         second_logit = pd.Series(logits[:, 1])
         labels = labels
 
         frame = {'0': first_logit, '1': second_logit, 'label': labels}
 
-        pd.DataFrame(frame).to_csv(os.path.join(path, "output.csv"))
+        return pd.DataFrame(frame)
 
-    def summarise(self, all_logits, all_labels):
+    # Collect all the outputs into suitable data structures
+    @staticmethod
+    def summarise(all_logits, all_labels):
         loss_fct = CrossEntropyLoss()
         loss = loss_fct(torch.from_numpy(all_logits), torch.from_numpy(all_labels)).item()
 
@@ -62,9 +58,30 @@ class StandardEvaluator:
         # Create a Pandas dataframe from the summary dictionary.
         summary = {"ROC": roc, "AVP": precision, "ACCURACY": accuracy, "LOSS": loss}
 
-        return summary
+        return pd.DataFrame([summary])
 
-    def run(self, classifier, classifier_name, data):
+    @staticmethod
+    def condense_output(self, all_logits, all_labels):
+        summary = self.summarise(all_logits, all_labels)
+
+        output = StandardEvaluator.make_output_dataframe(all_logits, all_labels)
+
+        return summary, output
+
+    def save(self, summary, df, path):
+
+        # if we are using a local filesystem we'll need to create the dirs, otherwise we dont.
+        if path[:2] != "gs":
+            if not os.path.exists(path):
+                os.makedirs(path)
+
+        # save the summary file.
+        summary.to_csv(os.path.join(path, 'summary.csv'))
+
+        # save the model output
+        df.to_csv(os.path.join(path, "output.csv"))
+
+    def run(self, classifier, classifier_name, data, output_dir):
         logging.info("Running Evaluations")
         # Put the classifier in training mode.
         device = torch.device(self.config['device'])
@@ -94,8 +111,8 @@ class StandardEvaluator:
                 all_labels = labels
                 all_logits = logits
 
-        summary = self.summarise(all_logits, all_labels)
+        summary, output = self.condense_output(all_logits, all_labels)
 
-        self.save(pd.DataFrame([summary]), all_logits, all_labels, self.result_dir, classifier_name)
+        self.save(summary, output, output_dir)
 
         return summary
