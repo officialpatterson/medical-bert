@@ -95,13 +95,6 @@ class StandardEvaluator:
         all_labels = None
 
         for step, batch in enumerate(tqdm(data, desc="evaluating")):
-
-            try:
-                batch = tuple(t.to(device) for t in batch)
-                print(type(batch))
-            except:
-                print(type(batch))
-                print(batch)
             input_ids, input_mask, segment_ids, label_ids = batch
 
             with torch.no_grad():
