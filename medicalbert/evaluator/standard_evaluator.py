@@ -20,8 +20,9 @@ class StandardEvaluator:
     def go(self, classifier, classifier_name):
         train_path = os.path.join(self.results_path, classifier_name, "train")
         valid_path = os.path.join(self.results_path, classifier_name, "validation")
-        self.run(classifier, classifier_name, self.datareader.get_train(), train_path)
-        results = self.run(classifier, classifier_name, self.datareader.get_validation(), valid_path)
+
+        self.run(classifier, self.datareader.get_train(), train_path)
+        results = self.run(classifier, self.datareader.get_validation(), valid_path)
 
         self.model_selector.update(results, classifier, classifier_name)
 
@@ -81,7 +82,7 @@ class StandardEvaluator:
         # save the model output
         df.to_csv(os.path.join(path, "output.csv"))
 
-    def run(self, classifier, classifier_name, data, output_dir):
+    def run(self, classifier, data, output_dir):
         logging.info("Running Evaluations")
         # Put the classifier in training mode.
         device = torch.device(self.config['device'])
