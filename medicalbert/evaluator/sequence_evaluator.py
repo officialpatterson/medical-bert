@@ -16,7 +16,7 @@ class SequenceEvaluator(StandardEvaluator):
         self.config = config
         self.model_selector = best_model_selector
 
-    def run(self, classifier, classifier_name, data, output_dir):
+    def run(self, classifier, data, output_dir):
         logging.info("Running Evaluations")
         # Put the classifier in training mode.
         device = torch.device(self.config['device'])
