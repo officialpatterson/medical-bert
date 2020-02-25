@@ -34,7 +34,7 @@ class StandardEvaluator:
         valid_score = self.model_selector.get_score()
         test_result_dir = "test" + "_" + name + "_" + str(valid_score)
 
-        self.run(classifier, test_result_dir, self.datareader.get_test())
+        self.run(classifier, self.datareader.get_test(), test_result_dir)
 
     # functions for formatting the output into a human readible format.
     @staticmethod
@@ -95,7 +95,13 @@ class StandardEvaluator:
         all_labels = None
 
         for step, batch in enumerate(tqdm(data, desc="evaluating")):
-            batch = tuple(t.to(device) for t in batch)
+
+            try:
+                batch = tuple(t.to(device) for t in batch)
+                print(type(batch))
+            except:
+                print(type(batch))
+                print(batch)
             input_ids, input_mask, segment_ids, label_ids = batch
 
             with torch.no_grad():

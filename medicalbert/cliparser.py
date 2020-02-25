@@ -22,6 +22,15 @@ def setup_parser():
     parser.add_argument("--eval",
                         action='store_true',
                         help="Whether to run eval on the dev set.")
+    parser.add_argument("--validate",
+                        action='store_true',
+                        help="run validation only")
+    parser.add_argument("--test",
+                        action='store_true',
+                        help="run test only")
+    parser.add_argument("--from_json",
+                        action='store_true',
+                        help="Whether to run eval on the dev set.")
     parser.add_argument("--use_model",
                         default=None,
                         type=str,
