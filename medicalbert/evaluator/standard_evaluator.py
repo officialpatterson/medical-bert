@@ -18,8 +18,8 @@ class StandardEvaluator:
 
     # This method will run a classifier against a train and validation set
     def go(self, classifier, classifier_name):
-        train_path = os.path.join(self.results_path, classifier_name, "train")
-        valid_path = os.path.join(self.results_path, classifier_name, "validation")
+        train_path = os.path.join(self.result_dir, classifier_name, "train")
+        valid_path = os.path.join(self.result_dir, classifier_name, "validation")
 
         self.run(classifier, self.datareader.get_train(), train_path)
         results = self.run(classifier, self.datareader.get_validation(), valid_path)
