@@ -1,4 +1,7 @@
-import logging, torch, os
+import logging
+import os
+import torch
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score, accuracy_score, average_precision_score
@@ -6,13 +9,11 @@ from torch.nn import CrossEntropyLoss
 from tqdm import tqdm
 
 
-
-
 ## Built in test evaluation
 class StandardEvaluator:
     def __init__(self, results_path, config, datareader, best_model_selector):
         self.datareader = datareader
-        self.result_dir = results_path #path to the results directory
+        self.result_dir = results_path # Path to the results directory
         self.config = config
         self.model_selector = best_model_selector
 
@@ -99,7 +100,6 @@ class StandardEvaluator:
 
             with torch.no_grad():
                 out = classifier.model(input_ids, labels=label_ids)
-                loss = out[0]
                 logits = out[1]
 
             logits = logits.detach().cpu().numpy()

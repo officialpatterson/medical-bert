@@ -7,7 +7,7 @@ class ROCValidation:
 
     def update(self, metrics, classifier, checkpoint): # metrics=roc, precision, accuracy, loss
         # As we only select on ROC we only compare use that metric
-        roc_score = metrics['ROC']
+        roc_score = metrics.iloc[0]['ROC']
 
         print("This score is {} - current best is {}".format(roc_score, self.best_score))
         if roc_score >= self.best_score:
@@ -33,7 +33,7 @@ class LossValidation:
 
     def update(self, metrics, classifier, checkpoint):  # metrics=roc, precision, accuracy, loss
         # As we only select on ROC we only compare use that metric
-        loss_score = metrics['loss']
+        loss_score = metrics.iloc[0]['loss']
 
         if loss_score <= self.best_score:
             self.best_score = loss_score
