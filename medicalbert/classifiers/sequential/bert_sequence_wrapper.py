@@ -18,7 +18,7 @@ class BertSequenceWrapper(nn.Module):
         for param in self.bert.parameters():
             param.requires_grad = False
 
-        self.rnn = nn.RNN(768, 768, 2, batch_first=True)
+        self.rnn = nn.LSTM(768, 768, 2, batch_first=True)
 
         # classification head.
         self.fc = nn.Linear(768, 768)
@@ -56,7 +56,7 @@ class BertSequenceWrapper(nn.Module):
 
         if labels is not None:
             loss_fct = CrossEntropyLoss()
-            loss = loss_fct(logits, labels.view(-1))
+            loss = loss_fct(logits.view(-1, self.num_labels), labels.view(-1))
             outputs = (loss,) + outputs
 
         return outputs
