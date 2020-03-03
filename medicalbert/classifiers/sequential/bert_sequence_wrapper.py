@@ -18,8 +18,6 @@ class BertSequenceWrapper(nn.Module):
         for param in self.bert.parameters():
             param.requires_grad = False
 
-        self.rnn = nn.LSTM(768, 768, 2, batch_first=True)
-
         # classification head.
         self.fc = nn.Linear(768, 768)
         self.fc1 = nn.Linear(768, 2)
@@ -47,8 +45,6 @@ class BertSequenceWrapper(nn.Module):
 
         #batch=(batch_size, num_sections, max_sequence_length)
         layer = self.embedding_layer(batch)
-
-        layer, _ = self.rnn(layer)
         layer = self.fc(layer)
         logits = self.fc1(layer)  # We only use the output of the last hidden layer.
 
