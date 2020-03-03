@@ -34,7 +34,7 @@ class StandardEvaluator:
         valid_score = self.model_selector.get_score()
         test_result_dir = "test" + "_" + name + "_" + str(valid_score)
 
-        self.run(classifier, test_result_dir, self.datareader.get_test())
+        self.run(classifier, self.datareader.get_test(), test_result_dir)
 
     # functions for formatting the output into a human readible format.
     @staticmethod
