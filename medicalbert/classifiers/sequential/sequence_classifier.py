@@ -15,14 +15,13 @@ class SequenceClassifier(Classifier):
 
         for _ in trange(self.epochs, int(self.config['epochs']), desc="Epoch"):
             tr_loss = 0
-            batche = []
             with tqdm(datareader.get_train(), desc="Iteration") as t:
                 for step, batch in enumerate(t):
 
                     batch = tuple(t.to(device) for t in batch)
-                    features, label_ids = batch
+                    input_ids, input_mask, segment_ids, label_ids = batch
 
-                    loss =  self.model(features, labels=label_ids)[0]
+                    loss =  self.model(input_ids, labels=label_ids)[0]
 
 
                     loss = loss / self.config['gradient_accumulation_steps']

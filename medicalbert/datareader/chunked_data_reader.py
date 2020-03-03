@@ -19,9 +19,6 @@ class InputFeatures(object):
         self.segment_ids = segment_ids
         self.label_id = label_id
 
-    def get_matrix(self):
-        return [self.input_ids, self.input_mask, self.segment_ids]
-
 
 class ChunkedDataReader(AbstractDataReader):
 
@@ -45,24 +42,37 @@ class ChunkedDataReader(AbstractDataReader):
 
         df = pd.read_csv(os.path.join(self.config['data_dir'], dataset))
 
-        input_features = []
-        df['text'] = df['text'].str.replace(r'\t', ' ', regex=True)
-        df['text'] = df['text'].str.replace(r'\n', ' ', regex=True)
-        df['text'] = df['text'].str.lower()
+        return self.build_fresh_dataset(df)
 
+    def _convert_rows_to_list_of_feature(self, df):
+        input_features = []
         for _, row in tqdm(df.iterrows(), total=df.shape[0]):
             text = row['text']
             lbl = row[self.config['target']]
 
             input_example = InputExample(None, text, None, self.config['target'])
             feature = self.convert_example_to_feature(input_example, lbl)
+
             input_features.append(feature)
 
-        all_features = torch.tensor([f.get() for f in input_features], dtype=torch.long)
-        all_label_ids = torch.tensor([f.get_label() for f in input_features], dtype=torch.long)
+        return input_features
 
-        td = TensorDataset(all_features, all_label_ids)
-        return td
+    def build_fresh_dataset(self, dataset):
+        df = pd.read_csv(os.path.join(self.config['data_dir'], dataset))
+
+        return self.build_fresh_dataset_from_df(df)
+    def build_fresh_dataset_from_df(self, df):
+        logging.info("Building fresh dataset...")
+
+        features = self._convert_rows_to_list_of_feature(df)
+
+        # Now parse them out into the proper parts.
+        all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
+        all_input_mask = torch.tensor([f.input_mask for f in features], dtype=torch.long)
+        all_segment_ids = torch.tensor([f.segment_ids for f in features], dtype=torch.long)
+        all_label_ids = torch.tensor([f.label_id for f in features], dtype=torch.long)
+
+        return TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
 
     def convert_example_to_feature(self, example, label):
 
@@ -85,7 +95,12 @@ class ChunkedDataReader(AbstractDataReader):
         assert len(inputFeatureBuilder.get()) == self.num_sections
 
         # We return the builder
-        return inputFeatureBuilder
+        input_ids = [feature.input_ids for feature in inputFeatureBuilder.features ]
+        input_masks = [feature.input_mask for feature in inputFeatureBuilder.features]
+        segment_ids = [feature.segment_ids for feature in inputFeatureBuilder.features]
+
+        # Now create a new 'type' of inputfeature
+        return InputFeatures(input_ids, input_masks, segment_ids, label)
 
     def convert_section_to_feature(self, tokens_a, label):
 

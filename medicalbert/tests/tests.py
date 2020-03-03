@@ -1,8 +1,19 @@
 import unittest
+
+import pandas as pd
+from torch.utils.data import DataLoader
 from transformers import BertTokenizer
 
+from datareader.abstract_data_reader import InputExample
+from medicalbert.datareader.chunked_data_reader import ChunkedDataReader
 
 class TestChunkedDataReader(unittest.TestCase):
+    def __init__(self, methodName='runTest'):
+        super().__init__(methodName)
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+        self.config = {"max_sequence_length": 10, "target":"target", "num_sections": 10}
+        self.cdr = ChunkedDataReader(self.config, self.tokenizer)
+
     def test_chunker_gen(self):
 
         # create a test string
@@ -32,41 +43,57 @@ class TestChunkedDataReader(unittest.TestCase):
         actual = inputFeature.input_ids[11:]
         self.assertTrue(expected, actual)
 
-    def test_convert_section_to_feature_short(self):
-        from medicalbert.datareader.chunked_data_reader import ChunkedDataReader
+    @staticmethod
+    def make_test_data():
+        # make a dummy dataset
 
-        # Create a chunkedDataReader
-        tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
-        config = {"max_sequence_length": 10}
-        cdr = ChunkedDataReader(config, tokenizer)
+        examples_text = ["Hi My name is Andrew Patterson and I made this and so I must test it.",
+                         "Hi My name is Andrew",
+                         "Hi My name is Andrew Patterson and I made this and so I must test it.",
+                         "Hi My name is Andrew", ]
+        examples_label = [1, 1, 1, 1]
+
+        data = {'text': examples_text, 'target': examples_label}
+
+
+        return pd.DataFrame.from_dict(data)
+
+    def test_build_fresh_dataset(self):
+        test_data = TestChunkedDataReader.make_test_data()
+
+        tensor_dataset = self.cdr.build_fresh_dataset(test_data)
+
+        self.assertTrue(4, len(tensor_dataset[0])) # This checks the number of features
+        print(tensor_dataset[0][0].shape)
+
+    def test_convert_section_to_feature_short(self):
         # create a test string that is shorter than the max sequence length
         test_input = "Hi My name is Andrew"
 
-        tokens = tokenizer.tokenize(test_input)
+        tokens = self.tokenizer.tokenize(test_input)
 
         # convert to a feature
-        inputFeature = cdr.convert_section_to_feature(tokens, "1")
+        inputFeature = self.cdr.convert_section_to_feature(tokens, "1")
 
         self.assertInputFeatureIsValid(inputFeature, 6)
 
     def test_convert_section_to_feature_long(self):
-        from medicalbert.datareader.chunked_data_reader import ChunkedDataReader
-
-        # Create a chunkedDataReader
-        tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
-        config = {"max_sequence_length": 10}
-        cdr = ChunkedDataReader(config, tokenizer)
-
-
         # create a test string that is longer than the max sequence length
         test_input = "Hi My name is Andrew Patterson and I made this and so I must test it."
 
-        tokens = tokenizer.tokenize(test_input)
+        tokens = self.tokenizer.tokenize(test_input)
 
         # convert to a feature
-        inputFeature = cdr.convert_section_to_feature(tokens, "1")
+        inputFeature = self.cdr.convert_section_to_feature(tokens, "1")
 
         self.assertInputFeatureIsValid(inputFeature, 9)
+
+    def test_convert_example_to_feature(self):
+        # create a test string that is longer than the max sequence length
+        test_input = "Hi My name is Andrew Patterson and I made this and so I must test it."
+        e = InputExample(None, test_input, None, 1)
+
+        result = self.cdr.convert_example_to_feature(e, 1)
 
 if __name__ == '__main__':
     unittest.main()
